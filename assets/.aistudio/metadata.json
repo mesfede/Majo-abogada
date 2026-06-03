@@ -1,0 +1,6 @@
+{
+  "name": "Maria Jose Lizaso - Sucesiones y Divorcios",
+  "description": "Sitio web profesional de servicios jurídicos especializados en derecho sucesorio y de familia con análisis de casos mediante IA.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

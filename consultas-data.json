@@ -1,0 +1,28 @@
+[
+  {
+    "id": "req_demo1_suc",
+    "fullName": "Alejandro Patricio Domínguez",
+    "email": "alejandro.p.dominguez@gmail.com",
+    "phone": "+54 11 4892-3021",
+    "caseType": "Sucesión",
+    "message": "Estimados, quería consultarles porque falleció mi padre hace un mes en la Ciudad de Buenos Aires. Él era dueño único de un departamento de tres ambientes en Palermo y de un auto Ford Focus modelo 2018. Somos mi hermano Lucas y yo los herederos forzosos. Mi padre no dejó ningún testamento inscrito. Queríamos saber qué documentación necesitamos conseguir para iniciar el juicio de sucesión, cuáles son los honorarios estimados de su estudio y cuánto tiempo aproximado suele demorar hasta conseguir la inscripción de la declaratoria de herederos.",
+    "createdAt": "2026-06-02T10:15:30Z",
+    "status": "pendiente",
+    "aiAnalysis": "{\"category\":\"Sucesión\",\"urgency\":\"Alta\",\"summary\":\"El causante falleció hace un mes en la jurisdicción de CABA dejando herederos legítimos (hijos forzosos) y acervo hereditario compuesto por bienes registrables (inmueble y rodado). Al no existir un testamento inscrito, corresponde instar juicio sucesorio ab-intestato.\",\"keyPoints\":[\"Muerte del causante fehacientemente acreditada.\",\"Bienes inmueble en Palermo y rodado modelo 2018 como bienes del acervo.\",\"Herederos forzosos: Lucas y Alejandro (vocidad herencial legítima).\",\"Competencia judicial en CABA (capital federal).\"],\"recommendedSteps\":[\"Obtener el acta original de defunción timbrada del causante.\",\"Reunir actas de nacimiento originales de ambos hermanos para acreditar filiación legal.\",\"Conseguir partidas de propiedades e informes de dominio preliminares.\",\"Prevenir traslados y ventas de los bienes registrables antes de la declaratoria.\"],\"suggestedQuestions\":[\"¿Donde fue el último domicilio real del fallecido?\",\"¿Alguno de los bienes registrables revestía el carácter de bien ganancial?\",\"¿Existe algún otro acreedor o reclamo pendiente contra el difunto?\"]}",
+    "aiClassification": "Sucesión",
+    "lawyerNotes": "Alejandro llamó por teléfono para confirmar que tiene la partida de defunción en mano. Lucas, su hermano, está de acuerdo con firmar el inicio del trámite. Coordinaremos cita virtual para el jueves."
+  },
+  {
+    "id": "req_demo2_fam",
+    "fullName": "Sandra Marcela Benítez",
+    "email": "sandra.benitez90@outlook.com.ar",
+    "phone": "+54 9 11 5821-4432",
+    "caseType": "Divorcio",
+    "message": "Hola, mi nombre es Sandra. Quisiera iniciar un proceso de divorcio con mi pareja. Estamos separados de hecho hace 8 meses, cada uno viviendo por su cuenta de forma pacífica, y de común acuerdo decidimos formalizarlo. Tenemos dos hijos menores de edad, de 5 y 8 años, que actualmente conviven conmigo, y un departamento a nombre de ambos que compramos después de casarnos de manera hipotecaria. Queremos que la cuota alimenticia y el régimen de comunicación queden muy bien estipulados para evitar futuras discusiones. Agradezco su respuesta.",
+    "createdAt": "2026-06-01T15:44:12Z",
+    "status": "revisado",
+    "aiAnalysis": "{\"category\":\"Divorcio\",\"urgency\":\"Media\",\"summary\":\"Petición de divorcio de mutuo acuerdo tras 8 meses de separación de hecho. Existen bienes gananciales (departamento hipotecado) e hijos menores de edad, lo que exige la redacción y homologación de un convenio regulador que contemple cuotas de alimento, tenencia y liquidación patrimonial.\",\"keyPoints\":[\"Separación de hecho consumada.\",\"Dos hijos menores de edad exigen homologación obligatoria del Ministerio de Menores.\",\"Inmueble con saldo hipotecario pendiente (deuda ganancial).\",\"Mutua voluntad inicial simplifica el trámite procesal de divorcio unilateral o conjunto.\"],\"recommendedSteps\":[\"Conseguir libreta de matrimonio civil o partida expedida del registro civil.\",\"Reunir actas de nacimiento de los dos hijos de la pareja.\",\"Identificar copia de la escritura y detalle actual de la hipoteca.\",\"Formular propuesta o pauta preliminar de tenencia compartida.\"],\"suggestedQuestions\":[\"¿Cómo solventan actualmente de hecho los gastos escolares y médicos de los menores?\",\"¿Cuál es el saldo pendiente de amortizar del crédito hipotecario del inmueble?\",\"¿Han hablado de la adjudicación preferencial del departamento?\"]}",
+    "aiClassification": "Divorcio",
+    "lawyerNotes": "Revisado por admisiones. Sandra demuestra intenciones pacíficas de disolución conyugal. Se requiere citación conjunta preliminar de mediación o presentación conjunta del convenio regulador."
+  }
+]

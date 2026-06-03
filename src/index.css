@@ -1,0 +1,32 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Outfit:wght@300;400;500;600&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Playfair Display", Georgia, serif;
+  --font-modern: "Outfit", sans-serif;
+  
+  --color-brand-primary: #041627;
+  --color-brand-gold: #685e3e;
+  --color-brand-gold-light: #eddfb6;
+  --color-brand-bg: #f9f9f9;
+}
+
+/* Material symbols styles fallback / helper */
+@import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200');
+
+/* Custom scrollbar and aesthetics */
+.scroll-smooth {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: var(--color-brand-bg);
+  color: #1a1c1c;
+}
+
+/* Texture overlay to match the original design paper feel */
+.hero-texture {
+  background-image: linear-gradient(rgba(249, 249, 249, 0.94), rgba(249, 249, 249, 0.94)), url("https://www.transparenttextures.com/patterns/clean-gray-paper.png");
+}
