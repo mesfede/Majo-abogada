@@ -45,26 +45,35 @@ export default function Sucesiones() {
       </div>
 
       <div className="max-w-[1280px] mx-auto px-6 md:px-16 relative z-10">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 lg:gap-12 lg:items-end">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 lg:gap-12 lg:items-center">
           
           {/* Left Column Description and elements */}
-          <div className="lg:col-span-7 space-y-8 pb-1">
+          <motion.div 
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "0px 0px -100px 0px" }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
+            className="lg:col-span-7 space-y-8 pb-1"
+          >
             <div>
-              <span className="font-sans text-xs uppercase tracking-[0.25em] text-brand-gold font-bold block mb-3">
+              <span className="font-sans text-xs uppercase tracking-[0.25em] text-brand-gold font-bold block mb-4">
                 Especialidad Principal
               </span>
-              <h2 className="font-display text-3xl md:text-4xl lg:text-5xl text-brand-primary font-bold mb-6 inline-block relative">
-                Derecho Sucesorio
-                <div className="h-1 bg-brand-gold-light mt-1.5 w-full rounded-xs"></div>
-              </h2>
+              <div className="flex items-center gap-4 mb-6">
+                <Landmark className="w-8 h-8 md:w-10 md:h-10 text-brand-gold stroke-[1.5]" />
+                <div className="h-10 w-[1px] bg-brand-gold/30"></div>
+                <h2 className="font-display text-3xl md:text-4xl lg:text-5xl text-brand-primary m-0 p-0">
+                  <span className="font-light">Derecho</span> <span className="font-medium">Sucesorio</span>
+                </h2>
+              </div>
             </div>
             
             <p className="font-sans text-lg md:text-xl font-light text-neutral-600 leading-[1.8] text-left max-w-2xl border-l-4 border-[#041627]/10 pl-5">
-              Gestionamos la transmisión de bienes con la máxima celeridad y rigor técnico. Entendemos que una sucesión es más que un trámite legal; es la preservación de un legado y la seguridad de sus herederos. Nos enfocamos en aliviar la carga administrativa de las familias durante estos momentos.
+              Gestionamos la transmisión de bienes con la máxima celeridad y rigor técnico. Entendemos que una sucesión es más que un trámite legal; es la preservación de un legado y la seguridad de sus herederos. Nos enfocamos en aliviar la carga administrativa de nuestros clientes durante estos momentos.
             </p>
             
             {/* Elements list matching original structure */}
-            <div className="flex flex-col space-y-3.5 pt-2 h-full justify-center">
+            <div className="flex flex-col space-y-4 pt-4">
               <div className="group flex items-center gap-4 p-3 md:p-4 rounded-xl bg-white/70 backdrop-blur-sm border border-brand-primary/5 shadow-sm hover:shadow-md hover:bg-[#eddfb6] hover:border-[#ebd59a] transition-all duration-300 cursor-default">
                 <div className="p-2.5 bg-neutral-100/80 group-hover:bg-white/60 rounded-lg text-brand-gold group-hover:text-[#041627] border border-brand-primary/5 transition-colors">
                   <Landmark className="w-5 h-5" />
@@ -107,10 +116,16 @@ export default function Sucesiones() {
                 </div>
               </div>
             </div>
-          </div>
+          </motion.div>
           
           {/* Right Column Highlights block with metrics */}
-          <div className="lg:col-span-5 bg-brand-primary text-white p-10 md:p-12 shadow-2xl relative rounded-sm">
+          <motion.div 
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "0px 0px -100px 0px" }}
+            transition={{ duration: 0.8, ease: "easeOut", delay: 0.2 }}
+            className="lg:col-span-5 bg-brand-primary text-white p-10 md:p-12 shadow-2xl relative rounded-sm mt-8 lg:mt-0"
+          >
             <div className="absolute right-6 top-6 opacity-5">
               <Award className="w-24 h-24 text-white" />
             </div>
@@ -144,7 +159,7 @@ export default function Sucesiones() {
                 </span>
               </div>
             </div>
-          </div>
+          </motion.div>
           
         </div>
       </div>

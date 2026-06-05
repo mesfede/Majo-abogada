@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'motion/react';
-import { BookOpen, Handshake, ShieldAlert, CheckCircle2, ChevronDown } from 'lucide-react';
+import { BookOpen, Handshake, ShieldAlert, CheckCircle2, ChevronDown, Briefcase } from 'lucide-react';
 
 export default function Especialidades() {
   const secondarySpecialties = [
@@ -51,16 +51,26 @@ export default function Especialidades() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
           
           {/* Secondary specialties cards Column */}
-          <div className="space-y-8">
+          <motion.div 
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "0px 0px -100px 0px" }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
+            className="space-y-8"
+          >
             <div>
-              <span className="font-sans text-xs uppercase tracking-[0.25em] text-brand-gold font-bold block mb-3">
+              <span className="font-sans text-xs uppercase tracking-[0.25em] text-brand-gold font-bold block mb-4">
                 Otras Prácticas
               </span>
-              <h2 className="font-display text-3xl md:text-4xl text-brand-primary font-bold mb-6">
-                Especialidades Complementarias
-              </h2>
+              <div className="flex items-center gap-4 mb-6">
+                <Briefcase className="w-8 h-8 md:w-10 md:h-10 text-brand-gold stroke-[1.5]" />
+                <div className="h-10 w-[1px] bg-brand-gold/30"></div>
+                <h2 className="font-display text-3xl md:text-3xl lg:text-4xl text-brand-primary m-0 p-0 leading-none">
+                  <span className="font-light">Especialidades</span> <span className="font-medium">Complementarias</span>
+                </h2>
+              </div>
               <p className="font-sans text-sm md:text-base text-[#44474c] leading-relaxed">
-                Brindamos un asesoramiento global en materia de derecho civil y patrimonial, coordinando soluciones estratégicas para preservar la paz familiar y consolidar la estabilidad de su patrimonio.
+                Brindamos un asesoramiento global en materia de derecho civil y patrimonial, coordinando soluciones estratégicas para preservar la paz y consolidar la estabilidad de su patrimonio.
               </p>
             </div>
 
@@ -83,10 +93,16 @@ export default function Especialidades() {
                 );
               })}
             </div>
-          </div>
+          </motion.div>
 
           {/* FAQ Column layout */}
-          <div className="bg-white p-8 md:p-10 border border-brand-primary/5 shadow-lg space-y-8">
+          <motion.div 
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "0px 0px -100px 0px" }}
+            transition={{ duration: 0.8, ease: "easeOut", delay: 0.2 }}
+            className="bg-white p-8 md:p-10 border border-brand-primary/5 shadow-lg space-y-8"
+          >
             <div>
               <span className="font-sans text-[10px] uppercase tracking-widest text-[#44474c] font-bold block mb-2">Preguntas Frecuentes</span>
               <h3 className="font-display text-2xl font-bold text-brand-primary">Dudas Procesales Comunes</h3>
@@ -105,7 +121,7 @@ export default function Especialidades() {
                 </div>
               ))}
             </div>
-          </div>
+          </motion.div>
 
         </div>
 

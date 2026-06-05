@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import Navigation from './components/Navigation';
 import Hero from './components/Hero';
 import Sucesiones from './components/Sucesiones';
 import Divorcios from './components/Divorcios';
@@ -7,7 +6,8 @@ import Especialidades from './components/Especialidades';
 import Nosotros from './components/Nosotros';
 import ConsultForm from './components/ConsultForm';
 import Dashboard from './components/Dashboard';
-import { Mail, Share2, Scale, ExternalLink, Lock, X, AlertCircle, ShieldAlert, Sparkles, Loader2 } from 'lucide-react';
+import logoImg1 from './assets/images/Majo_logo_01.png';
+import { Mail, Share2, Scale, ExternalLink, Lock, X, AlertCircle, ShieldAlert, Sparkles, Loader2, LogOut } from 'lucide-react';
 
 export default function App() {
   // Authentication states
@@ -31,7 +31,7 @@ export default function App() {
     }
     const element = document.getElementById(id);
     if (element) {
-      const headerOffset = 80;
+      const headerOffset = 24; // Less offset since we removed the tall sticky nav bar!
       const elementPosition = element.getBoundingClientRect().top;
       const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
 
@@ -108,22 +108,35 @@ export default function App() {
   return (
     <div className="min-h-screen bg-[#f9f9f9] text-[#1a1c1c] flex flex-col font-sans selection:bg-brand-gold-light selection:text-brand-primary">
       
-      {/* Universal header navigation */}
-      <Navigation 
-        onToggleDashboard={handleToggleDashboard} 
-        showDashboard={showDashboard} 
-        onScrollTo={handleScrollTo}
-      />
+      {/* Floating system bar only displayed for authenticated Admins to quickly access dashboard */}
+      {isAuthenticated && !showDashboard && (
+        <div className="fixed top-4 right-4 z-50 bg-slate-900/90 text-white border border-brand-gold/30 px-4 py-2 flex items-center gap-3 shadow-xl backdrop-blur-md rounded-xs">
+          <span className="text-[10px] uppercase font-bold tracking-widest text-[#eddfb6]">Autenticado</span>
+          <button
+            onClick={() => setShowDashboard(true)}
+            className="px-2.5 py-1 bg-brand-gold text-brand-primary text-[10px] font-bold uppercase tracking-wider hover:bg-white transition-all cursor-pointer"
+          >
+            Abrir Expedientes
+          </button>
+          <button
+            onClick={handleLogoutAdmin}
+            className="p-1 hover:text-red-400 transition-colors cursor-pointer"
+            title="Cerrar Sesión"
+          >
+            <LogOut className="w-3.5 h-3.5" />
+          </button>
+        </div>
+      )}
 
       {/* Main layout contents conditionally renders Client views vs Admin CRM Dashboard */}
       <main className="flex-grow">
         {showDashboard ? (
           <div className="relative">
-            {/* Direct dynamic logout toggle at the top of Dashboard layout */}
+            {/* Direct logout button overlaying administrative view */}
             <div className="absolute top-4 right-16 z-30 flex gap-2">
               <button
                 onClick={handleLogoutAdmin}
-                className="bg-red-650 hover:bg-red-750 text-white font-sans text-[10px] font-bold uppercase tracking-widest px-3 py-1.5 rounded transition-all cursor-pointer shadow-sm hover:shadow-md"
+                className="bg-red-650 hover:bg-transparent border border-red-500/20 hover:border-red-500 hover:text-red-500 text-white font-sans text-[10px] font-bold uppercase tracking-widest px-3 py-1.5 rounded-xs transition-all cursor-pointer shadow-sm hover:shadow-md"
                 title="Cerrar sesión segura del letrado"
               >
                 Cerrar Sesión
@@ -133,12 +146,12 @@ export default function App() {
           </div>
         ) : (
           <div className="animate-fade-in">
-            {/* Beautiful client views stack */}
+            {/* Beautiful streamlined full-bleed hero and content stacks */}
             <Hero onScrollTo={handleScrollTo} />
             <Sucesiones />
             <Divorcios />
             
-            {/* Visual divider as requested by design */}
+            {/* Visual separating line */}
             <div className="max-w-[1280px] mx-auto px-6 md:px-16">
               <hr className="border-t border-brand-gold/15" />
             </div>
@@ -156,13 +169,13 @@ export default function App() {
           
           {/* Trademark details */}
           <div className="flex flex-col items-center md:items-start gap-4 text-center md:text-left">
-            <div className="flex flex-col">
-              <span className="font-display text-lg font-bold tracking-widest text-[#eddfb6] uppercase">
-                MARÍA JOSÉ LIZASO
-              </span>
-              <span className="text-[10px] uppercase tracking-[0.25em] text-slate-400 font-semibold mt-0.5">
-                Abogada
-              </span>
+            <div className="flex flex-col items-center md:items-start">
+              <img 
+                src={logoImg1} 
+                alt="María José Lizaso - Abogada" 
+                className="h-[55px] opacity-100 object-contain drop-shadow-sm mb-1"
+                referrerPolicy="no-referrer"
+              />
             </div>
             
             <p className="font-sans text-xs text-slate-400 mt-2 flex items-center justify-center md:justify-start gap-1 select-none">

@@ -11,52 +11,12 @@ export default function ConsultForm() {
   const [caseType, setCaseType] = useState<'Sucesión' | 'Divorcio' | 'Consulta General'>('Sucesión');
   const [message, setMessage] = useState('');
 
-  // AI & Submission States
-  const [isAnalyzing, setIsAnalyzing] = useState(false);
-  const [analysis, setAnalysis] = useState<CaseAnalysis | null>(null);
-  const [analysisError, setAnalysisError] = useState<string | null>(null);
-  
+  // Submission States
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
 
-  // Invoke Gemini AI to analyze the described case text
-  const handleAnalyzeCase = async () => {
-    if (!message || message.trim().length < 15) {
-      setAnalysisError('Por favor, describa su caso con un poco más de detalle (mínimo 15 caracteres) para poder ofrecerle un análisis virtual certero.');
-      return;
-    }
-
-    setIsAnalyzing(true);
-    setAnalysisError(null);
-    setAnalysis(null);
-
-    try {
-      const response = await fetch('/api/analyze-case', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message }),
-      });
-
-      if (!response.ok) {
-        throw new Error('No se pudo completar el análisis del caso en el servidor.');
-      }
-
-      const result: CaseAnalysis = await response.json();
-      setAnalysis(result);
-      
-      // Auto-set the case type if classified confidently by Gemini
-      if (result.category === 'Sucesión' || result.category === 'Divorcio' || result.category === 'Consulta General') {
-        setCaseType(result.category);
-      }
-    } catch (err: any) {
-      setAnalysisError(err.message || 'Error de red al establecer comunicación con el módulo de análisis jurídico.');
-    } finally {
-      setIsAnalyzing(false);
-    }
-  };
-
-  // Submit final consultation and analysis history
+  // Submit final consultation
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!fullName || !email || !message) {
@@ -74,8 +34,6 @@ export default function ConsultForm() {
         phone,
         caseType,
         message,
-        aiAnalysisSummary: analysis ? JSON.stringify(analysis) : null,
-        aiCaseCategory: analysis ? analysis.category : null,
       };
 
       const response = await fetch('/api/consultas', {
@@ -88,13 +46,29 @@ export default function ConsultForm() {
         throw new Error('Error al enviar la consulta legal.');
       }
 
+      try {
+        await fetch("https://formsubmit.co/ajax/mesfede@gmail.com", {
+          method: "POST",
+          headers: { 
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+          },
+          body: JSON.stringify({
+            Nombre: fullName,
+            Correo: email,
+            Telefono: phone,
+            Tramite: caseType,
+            Consulta: message
+          })
+        });
+      } catch (e) { console.error("FormSubmit error", e); }
+
       setSubmitted(true);
       // Reset form
       setFullName('');
       setEmail('');
       setPhone('');
       setMessage('');
-      setAnalysis(null);
     } catch (err: any) {
       setSubmitError(err.message || 'Error de conexión al enviar la consulta legal.');
     } finally {
@@ -110,7 +84,13 @@ export default function ConsultForm() {
 
       <div className="max-w-[800px] mx-auto px-6 relative z-10">
         
-        <div className="text-center mb-16">
+        <motion.div 
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "0px 0px -100px 0px" }}
+          transition={{ duration: 0.8, ease: "easeOut" }}
+          className="text-center mb-16"
+        >
           <span className="font-sans text-xs uppercase tracking-[0.25em] text-brand-gold font-bold block mb-3">
             Atención Profesional
           </span>
@@ -120,9 +100,15 @@ export default function ConsultForm() {
           <p className="font-sans text-sm md:text-base text-[#44474c] max-w-xl mx-auto leading-relaxed">
             Complete el formulario brindando los detalles esenciales y nos pondremos en contacto a la brevedad para realizar una evaluación jurídica rigurosa de su situación.
           </p>
-        </div>
+        </motion.div>
 
-        <div className="bg-white p-8 md:p-12 shadow-xl border border-brand-primary/5">
+        <motion.div 
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "0px 0px -100px 0px" }}
+          transition={{ duration: 0.8, ease: "easeOut", delay: 0.2 }}
+          className="bg-white p-8 md:p-12 shadow-xl border border-brand-primary/5"
+        >
           <AnimatePresence mode="wait">
             {!submitted ? (
               <motion.form 
@@ -181,7 +167,7 @@ export default function ConsultForm() {
                   
                   <div className="space-y-2">
                     <label className="font-sans text-[11px] font-bold text-brand-primary uppercase tracking-wider block">
-                      Tipo de Trámite <span className="text-xs text-brand-gold/80 italic">(Autodetectado por IA al analizar)</span>
+                      Tipo de Trámite
                     </label>
                     <select 
                       value={caseType}
@@ -195,113 +181,23 @@ export default function ConsultForm() {
                   </div>
                 </div>
 
-                {/* Case description with Gemini button */}
+                {/* Case description */}
                 <div className="space-y-3">
                   <div className="flex justify-between items-center flex-wrap gap-2">
                     <label className="font-sans text-[11px] font-bold text-brand-primary uppercase tracking-wider block">
                       Mensaje / Descripción Detallada del Caso <span className="text-red-500">*</span>
                     </label>
-                    
-                    <button
-                      type="button"
-                      disabled={isAnalyzing || message.trim().length < 15}
-                      onClick={handleAnalyzeCase}
-                      className={`text-xs flex items-center gap-1 px-3 py-1 rounded bg-brand-gold/15 text-brand-gold font-semibold transition-all ease-in hover:bg-brand-gold/22 cursor-pointer ${
-                        message.trim().length < 15 ? 'opacity-50 cursor-not-allowed bg-neutral-200 text-neutral-500' : ''
-                      }`}
-                      title="Analiza tu caso en tiempo real con inteligencia artificial para conocer su urgencia de inmediato"
-                    >
-                      {isAnalyzing ? (
-                        <>
-                          <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                          <span>Analizando...</span>
-                        </>
-                      ) : (
-                        <>
-                          <Sparkles className="w-3.5 h-3.5" />
-                          <span>Pre-evaluar con IA</span>
-                        </>
-                      )}
-                    </button>
                   </div>
 
                   <textarea 
                     rows={5}
                     required
-                    placeholder="Describa brevemente los hechos (ej: fallecimiento de familiar, bienes involucrados, testamentos, intenciones de divorcio, acuerdos intermedios, etc.)"
+                    placeholder="Describa brevemente los hechos (ej: fallecimiento de allegado, bienes involucrados, testamentos, intenciones de divorcio, acuerdos intermedios, etc.)"
                     value={message}
-                    onChange={(e) => {
-                      setMessage(e.target.value);
-                      if (analysisError) setAnalysisError(null);
-                    }}
+                    onChange={(e) => setMessage(e.target.value)}
                     className="w-full bg-transparent border border-brand-primary/10 focus:border-brand-gold focus:ring-1 focus:ring-brand-gold/20 transition-all py-3 px-4 text-sm text-brand-primary placeholder:text-neutral-400 outline-none resize-none leading-relaxed"
                   />
-                  
-                  {analysisError && (
-                    <div className="p-3 bg-red-50 border border-red-200 text-red-600 text-xs rounded flex items-center gap-2">
-                      <AlertCircle className="w-4 h-4 flex-shrink-0" />
-                      <span>{analysisError}</span>
-                    </div>
-                  )}
                 </div>
-
-                {/* Interactive AI Evaluation Display */}
-                <AnimatePresence>
-                  {analysis && (
-                    <motion.div 
-                      className="p-6 bg-brand-primary text-white border-l-4 border-brand-gold shadow-lg"
-                      initial={{ opacity: 0, height: 0 }}
-                      animate={{ opacity: 1, height: 'auto' }}
-                      exit={{ opacity: 0, height: 0 }}
-                      transition={{ duration: 0.4 }}
-                    >
-                      <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
-                        <div className="flex items-center gap-1.5 text-brand-gold-light">
-                          <Sparkles className="w-4 h-4" />
-                          <span className="font-sans text-xs uppercase tracking-wider font-bold">Análisis Virtual de Admisión (Gemini 3.5)</span>
-                        </div>
-                        <div className="flex gap-2">
-                          <span className="bg-white/10 px-2 py-0.5 rounded text-[10px] uppercase font-bold tracking-widest text-[#eddfb6]">
-                            Tipo: {analysis.category}
-                          </span>
-                          <span className={`px-2 py-0.5 rounded text-[10px] uppercase font-bold tracking-widest text-white ${
-                            analysis.urgency === 'Alta' ? 'bg-red-900/60 text-red-100' : analysis.urgency === 'Media' ? 'bg-amber-800/60 text-amber-100' : 'bg-emerald-950/60 text-emerald-100'
-                          }`}>
-                            Urgencia: {analysis.urgency}
-                          </span>
-                        </div>
-                      </div>
-
-                      <p className="font-sans text-xs text-slate-200 leading-relaxed italic mb-4 pb-3 border-b border-white/10">
-                        "{analysis.summary}"
-                      </p>
-
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div className="space-y-2">
-                          <span className="text-[10px] font-bold uppercase tracking-wider text-brand-gold-light flex items-center gap-1">
-                            <FileCheck className="w-3.5 h-3.5" /> Pasos preliminares recomendados:
-                          </span>
-                          <ul className="list-disc pl-4 text-xs text-slate-300 space-y-1">
-                            {analysis.recommendedSteps.slice(0, 3).map((step, k) => (
-                              <li key={k}>{step}</li>
-                            ))}
-                          </ul>
-                        </div>
-                        
-                        <div className="space-y-2">
-                          <span className="text-[10px] font-bold uppercase tracking-wider text-brand-gold-light flex items-center gap-1">
-                            <HelpCircle className="w-3.5 h-3.5" /> Preguntas para su reunión:
-                          </span>
-                          <ul className="list-disc pl-4 text-xs text-slate-300 space-y-1">
-                            {analysis.suggestedQuestions.slice(0, 3).map((q, k) => (
-                              <li key={k}>{q}</li>
-                            ))}
-                          </ul>
-                        </div>
-                      </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
 
                 {submitError && (
                   <div className="p-4 bg-red-50 text-red-700 text-xs rounded border border-red-150 font-medium">
@@ -356,7 +252,7 @@ export default function ConsultForm() {
               </motion.div>
             )}
           </AnimatePresence>
-        </div>
+        </motion.div>
       </div>
     </section>
   );
