@@ -6,6 +6,8 @@ import {
   ChevronRight, RefreshCw, MessageSquare, FileText, CheckCircle2, Loader2, ArrowLeft
 } from 'lucide-react';
 import { ConsultationRequest, CaseAnalysis } from '../types';
+import { db } from '../firebase';
+import { collection, getDocs, doc, updateDoc, deleteDoc, query, orderBy } from 'firebase/firestore';
 
 interface DashboardProps {
   onBackToPublic: () => void;
@@ -28,24 +30,47 @@ export default function Dashboard({ onBackToPublic }: DashboardProps) {
   const [filterType, setFilterType] = useState<string>('all');
   const [filterStatus, setFilterStatus] = useState<string>('all');
 
-  // Load consultations from Express API
+  // Load consultations from Cloud Firestore (primary) or local Express API (fallback)
   const fetchRequests = async () => {
     setIsLoading(true);
+    let firestoreLoaded = false;
     try {
-      const res = await fetch('/api/consultas');
-      if (res.ok) {
-        const data: ConsultationRequest[] = await res.json();
+      // 1. Primary: Try to load directly from Cloud Firestore (critical for Vercel/production)
+      const q = query(collection(db, 'consultas'), orderBy('createdAt', 'desc'));
+      const querySnapshot = await getDocs(q);
+      const data: ConsultationRequest[] = [];
+      querySnapshot.forEach((docSnap) => {
+        data.push(docSnap.data() as ConsultationRequest);
+      });
+      
+      if (data.length > 0) {
         setRequests(data);
-        if (data.length > 0 && !selectedId) {
-          // Default to high-priority or first item
+        if (!selectedId) {
+          // Default to the first element
           setSelectedId(data[0].id);
         }
+        firestoreLoaded = true;
       }
-    } catch (err) {
-      console.error('Error fetching consultations', err);
-    } finally {
-      setIsLoading(false);
+    } catch (firestoreErr) {
+      console.warn('Firestore fetch failed or permission denied, falling back to local server...', firestoreErr);
     }
+
+    if (!firestoreLoaded) {
+      // 2. Fallback: Local Server JSON file (for local development or custom servers)
+      try {
+        const res = await fetch('/api/consultas');
+        if (res.ok) {
+          const data: ConsultationRequest[] = await res.json();
+          setRequests(data);
+          if (data.length > 0 && !selectedId) {
+            setSelectedId(data[0].id);
+          }
+        }
+      } catch (err) {
+        console.error('Error fetching consultations from local server fallback', err);
+      }
+    }
+    setIsLoading(false);
   };
 
   useEffect(() => {
@@ -72,17 +97,25 @@ export default function Dashboard({ onBackToPublic }: DashboardProps) {
   const handleUpdateStatus = async (status: 'pendiente' | 'revisado' | 'respondido') => {
     if (!selectedId) return;
     try {
-      const res = await fetch(`/api/consultas/${selectedId}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ status })
-      });
-      if (res.ok) {
-        const updatedItem = await res.json();
-        setRequests(prev => prev.map(r => r.id === selectedId ? updatedItem : r));
+      // Try Cloud Firestore first
+      const docRef = doc(db, 'consultas', selectedId);
+      await updateDoc(docRef, { status });
+      setRequests(prev => prev.map(r => r.id === selectedId ? { ...r, status } : r));
+    } catch (firestoreErr) {
+      console.warn('Firestore update status failed, trying static server fallback...', firestoreErr);
+      try {
+        const res = await fetch(`/api/consultas/${selectedId}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ status })
+        });
+        if (res.ok) {
+          const updatedItem = await res.json();
+          setRequests(prev => prev.map(r => r.id === selectedId ? updatedItem : r));
+        }
+      } catch (err) {
+        console.error('Error updating status on server', err);
       }
-    } catch (err) {
-      console.error('Error updating status', err);
     }
   };
 
@@ -91,18 +124,27 @@ export default function Dashboard({ onBackToPublic }: DashboardProps) {
     if (!selectedId) return;
     setIsSavingNotes(true);
     try {
-      const res = await fetch(`/api/consultas/${selectedId}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ lawyerNotes })
-      });
-      if (res.ok) {
-        const updatedItem = await res.json();
-        setRequests(prev => prev.map(r => r.id === selectedId ? updatedItem : r));
-        alert('Notas guardadas de forma segura en el servidor de expedientes.');
+      // Try Cloud Firestore first
+      const docRef = doc(db, 'consultas', selectedId);
+      await updateDoc(docRef, { lawyerNotes });
+      setRequests(prev => prev.map(r => r.id === selectedId ? { ...r, lawyerNotes } : r));
+      alert('Notas guardadas de forma segura en Firestore Cloud.');
+    } catch (firestoreErr) {
+      console.warn('Firestore save notes failed, trying static server fallback...', firestoreErr);
+      try {
+        const res = await fetch(`/api/consultas/${selectedId}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ lawyerNotes })
+        });
+        if (res.ok) {
+          const updatedItem = await res.json();
+          setRequests(prev => prev.map(r => r.id === selectedId ? updatedItem : r));
+          alert('Notas guardadas de forma segura en el servidor de expedientes.');
+        }
+      } catch (err) {
+        console.error('Error saving notes on server', err);
       }
-    } catch (err) {
-      console.error('Error saving notes', err);
     } finally {
       setIsSavingNotes(false);
     }
@@ -110,7 +152,7 @@ export default function Dashboard({ onBackToPublic }: DashboardProps) {
 
   // Generate suggested draft reply email using Gemini based on original context
   const handleGenerateReplyEmail = async () => {
-    if (!selectedId) return;
+    if (!selectedId || !activeRequest) return;
     setIsGeneratingEmail(true);
     setGeneratedEmail('');
 
@@ -123,10 +165,29 @@ export default function Dashboard({ onBackToPublic }: DashboardProps) {
         const data = await res.json();
         setGeneratedEmail(data.text);
       } else {
-        throw new Error('No se pudo establecer contacto con el generador de redacciones jurídica.');
+        throw new Error('API server unavailable');
       }
-    } catch (err: any) {
-      alert(err.message || 'Error al generar sugerencia por Gemini.');
+    } catch (err) {
+      console.warn('Backend draft generator unavailable (expected on flat static Vercel host). Generating fallback template in-browser.', err);
+      
+      const clientName = activeRequest.fullName;
+      const caseTopic = activeRequest.caseType;
+      
+      const fallbackTemplate = `Estimado/a ${clientName},
+
+Agradecemos sinceramente su contacto con el estudio de la Dra. María José Lizaso. Hemos recibido su consulta con respecto a su trámite de: "${caseTopic}".
+
+Dado el carácter sensible y la rigurosidad ética y profesional con la que abordamos cada expediente, consideramos de suma importancia coordinar una entrevista de admisión preliminar (vía Zoom o presencial en nuestras oficinas) para analizar detalladamente los pormenores jurídicos de su situación.
+
+Como especialista, quedo enteramente a su disposición para acompañarle en este proceso y resguardar sus derechos de manera idónea.
+
+Cordialmente,
+
+Dra. María José Lizaso
+Abogada Especialista en Sucesiones y Divorcios
+Estudio Jurídico Lizaso CABA / Prov. Bs. As.`;
+
+      setGeneratedEmail(fallbackTemplate);
     } finally {
       setIsGeneratingEmail(false);
     }
@@ -138,17 +199,28 @@ export default function Dashboard({ onBackToPublic }: DashboardProps) {
       return;
     }
     try {
-      const res = await fetch(`/api/consultas/${id}`, {
-        method: 'DELETE'
-      });
-      if (res.ok) {
-        setRequests(prev => prev.filter(r => r.id !== id));
-        if (selectedId === id) {
-          setSelectedId(null);
-        }
+      // Try Cloud Firestore first
+      const docRef = doc(db, 'consultas', id);
+      await deleteDoc(docRef);
+      setRequests(prev => prev.filter(r => r.id !== id));
+      if (selectedId === id) {
+        setSelectedId(null);
       }
-    } catch (err) {
-      console.error('Error deleting request', err);
+    } catch (firestoreErr) {
+      console.warn('Firestore delete failed, trying static server fallback...', firestoreErr);
+      try {
+        const res = await fetch(`/api/consultas/${id}`, {
+          method: 'DELETE'
+        });
+        if (res.ok) {
+          setRequests(prev => prev.filter(r => r.id !== id));
+          if (selectedId === id) {
+            setSelectedId(null);
+          }
+        }
+      } catch (err) {
+        console.error('Error deleting request on server', err);
+      }
     }
   };
 

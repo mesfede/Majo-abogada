@@ -1,0 +1,42 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Global safety net: default deny
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Helper functions
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isLawyer() {
+      return isSignedIn() && 
+             request.auth.token.email == "mesfede@gmail.com" && 
+             request.auth.token.email_verified == true;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function isValidConsulta(consulta) {
+      return consulta.fullName is string && consulta.fullName.size() <= 200 &&
+             consulta.email is string && consulta.email.size() <= 320 &&
+             consulta.message is string && consulta.message.size() <= 10000;
+    }
+
+    // Consultations block
+    match /consultas/{consultaId} {
+      // Create is public so anyone can submit a legal query form
+      allow create: if isValidId(consultaId) && 
+                       isValidConsulta(request.resource.data) &&
+                       request.resource.data.status == "pendiente";
+
+      // Admin actions: Only the authenticated and verified lawyer (mesfede@gmail.com) can read, update, or delete consultas
+      allow read, delete: if isLawyer();
+      allow update: if isLawyer() && isValidConsulta(request.resource.data);
+    }
+  }
+}

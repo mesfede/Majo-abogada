@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Send, Sparkles, CheckCircle, AlertCircle, FileCheck, HelpCircle, Loader2 } from 'lucide-react';
 import { CaseAnalysis } from '../types';
+import { db } from '../firebase';
+import { collection, doc, setDoc } from 'firebase/firestore';
 
 export default function ConsultForm() {
   // Form fields
@@ -38,16 +40,38 @@ export default function ConsultForm() {
 
       let savedToDb = false;
       try {
-        const response = await fetch('/api/consultas', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload),
+        // Try saving directly to secure cloud Firestore first (ideal for Vercel)
+        const consultaDocRef = doc(collection(db, 'consultas'));
+        const consultaId = consultaDocRef.id;
+        
+        await setDoc(consultaDocRef, {
+          id: consultaId,
+          fullName,
+          email,
+          phone: phone || '',
+          caseType,
+          message,
+          createdAt: new Date().toISOString(),
+          status: 'pendiente',
+          aiAnalysis: null,
+          aiClassification: null,
+          lawyerNotes: ''
         });
-        if (response.ok) {
-          savedToDb = true;
+        savedToDb = true;
+      } catch (firestoreErr) {
+        console.warn('Firestore direct write failed, trying fallback backend api/consultas... ', firestoreErr);
+        try {
+          const response = await fetch('/api/consultas', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload),
+          });
+          if (response.ok) {
+            savedToDb = true;
+          }
+        } catch (dbErr) {
+          console.warn('Backend database not available or read-only (expected on normal static/Vercel host). Falling back solely to email notification.', dbErr);
         }
-      } catch (dbErr) {
-        console.warn('Backend database not available or read-only (expected on normal static/Vercel host). Falling back solely to email notification.', dbErr);
       }
 
       // Send via FormSubmit client-side (Zero API Key configuration needed)

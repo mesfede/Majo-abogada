@@ -1,0 +1,29 @@
+{
+  "entities": {
+    "consultas": {
+      "title": "Consulta",
+      "description": "A consultation query submitted by a client and processed by the lawyer",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "fullName": { "type": "string" },
+        "email": { "type": "string", "format": "email" },
+        "phone": { "type": "string" },
+        "caseType": { "type": "string", "enum": ["Sucesión", "Divorcio", "Consulta General"] },
+        "message": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "status": { "type": "string", "enum": ["pendiente", "revisado", "respondido"] },
+        "aiAnalysis": { "type": "string" },
+        "aiClassification": { "type": "string" },
+        "lawyerNotes": { "type": "string" }
+      },
+      "required": ["fullName", "email", "message", "createdAt"]
+    }
+  },
+  "firestore": {
+    "consultas/{consultaId}": {
+      "schema": "consultas",
+      "description": "Collection of all submitted consultation cases"
+    }
+  }
+}
