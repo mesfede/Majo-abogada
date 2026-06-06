@@ -36,18 +36,23 @@ export default function ConsultForm() {
         message,
       };
 
-      const response = await fetch('/api/consultas', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
-      });
-
-      if (!response.ok) {
-        throw new Error('Error al enviar la consulta legal.');
+      let savedToDb = false;
+      try {
+        const response = await fetch('/api/consultas', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        });
+        if (response.ok) {
+          savedToDb = true;
+        }
+      } catch (dbErr) {
+        console.warn('Backend database not available or read-only (expected on normal static/Vercel host). Falling back solely to email notification.', dbErr);
       }
 
+      // Send via FormSubmit client-side (Zero API Key configuration needed)
       try {
-        await fetch("https://formsubmit.co/ajax/mesfede@gmail.com", {
+        const mailResponse = await fetch("https://formsubmit.co/ajax/mesfede@gmail.com", {
           method: "POST",
           headers: { 
             'Content-Type': 'application/json',
@@ -58,10 +63,21 @@ export default function ConsultForm() {
             Correo: email,
             Telefono: phone,
             Tramite: caseType,
-            Consulta: message
+            Consulta: message,
+            _subject: `Nueva consulta web - ${fullName}`,
+            _honey: "" // anti-spam
           })
         });
-      } catch (e) { console.error("FormSubmit error", e); }
+
+        if (!mailResponse.ok && !savedToDb) {
+          throw new Error('No se pudo enviar la consulta por correo.');
+        }
+      } catch (mailErr) {
+        console.error("FormSubmit email error", mailErr);
+        if (!savedToDb) {
+          throw new Error('Ocurrió un error al procesar el envío de su consulta. Por favor, reintente.');
+        }
+      }
 
       setSubmitted(true);
       // Reset form
