@@ -6,7 +6,7 @@ import Especialidades from './components/Especialidades';
 import Nosotros from './components/Nosotros';
 import ConsultForm from './components/ConsultForm';
 import Dashboard from './components/Dashboard';
-import logoImg1 from './assets/images/Majo_logo_01.png';
+import logoImg1 from './assets/images/Majo_logo_pink.png';
 import { Mail, Share2, Scale, ExternalLink, Lock, X, AlertCircle, ShieldAlert, Sparkles, Loader2, LogOut } from 'lucide-react';
 import { auth } from './firebase';
 import { signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
@@ -151,7 +151,7 @@ export default function App() {
       {/* Floating system bar only displayed for authenticated Admins to quickly access dashboard */}
       {isAuthenticated && !showDashboard && (
         <div className="fixed top-4 right-4 z-50 bg-slate-900/90 text-white border border-brand-gold/30 px-4 py-2 flex items-center gap-3 shadow-xl backdrop-blur-md rounded-xs">
-          <span className="text-[10px] uppercase font-bold tracking-widest text-[#eddfb6]">Autenticado</span>
+          <span className="text-[10px] uppercase font-bold tracking-widest text-brand-gold-light">Autenticado</span>
           <button
             onClick={() => setShowDashboard(true)}
             className="px-2.5 py-1 bg-brand-gold text-brand-primary text-[10px] font-bold uppercase tracking-wider hover:bg-white transition-all cursor-pointer"
@@ -213,7 +213,7 @@ export default function App() {
               <img 
                 src={logoImg1} 
                 alt="María José Lizaso - Abogada" 
-                className="h-[55px] opacity-100 object-contain drop-shadow-sm mb-1"
+                className="h-[47px] opacity-100 object-contain drop-shadow-sm mb-1"
                 referrerPolicy="no-referrer"
               />
             </div>

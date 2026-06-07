@@ -39,12 +39,13 @@ export default function ConsultForm() {
       };
 
       let savedToDb = false;
+      const consultaId = "req_" + Date.now().toString(36) + Math.random().toString(36).substring(2, 7);
+
       try {
         // Try saving directly to secure cloud Firestore first (ideal for Vercel)
-        const consultaDocRef = doc(collection(db, 'consultas'));
-        const consultaId = consultaDocRef.id;
+        const consultaDocRef = doc(db, 'consultas', consultaId);
         
-        await setDoc(consultaDocRef, {
+        const savePromise = setDoc(consultaDocRef, {
           id: consultaId,
           fullName,
           email,
@@ -57,26 +58,38 @@ export default function ConsultForm() {
           aiClassification: null,
           lawyerNotes: ''
         });
+
+        // 2-second timeout to avoid staying stuck on "Enviando Solicitud..." when Firebase is cold or blocked
+        const timeoutPromise = new Promise((_, reject) => 
+          setTimeout(() => reject(new Error('Firebase timeout')), 2000)
+        );
+
+        await Promise.race([savePromise, timeoutPromise]);
         savedToDb = true;
       } catch (firestoreErr) {
-        console.warn('Firestore direct write failed, trying fallback backend api/consultas... ', firestoreErr);
-        try {
-          const response = await fetch('/api/consultas', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload),
-          });
-          if (response.ok) {
-            savedToDb = true;
-          }
-        } catch (dbErr) {
-          console.warn('Backend database not available or read-only (expected on normal static/Vercel host). Falling back solely to email notification.', dbErr);
+        console.warn('Firestore direct write failed or timed out, trying fallback backend api/consultas... ', firestoreErr);
+      }
+
+      // Dual-write to Express backup server for full synchronization
+      try {
+        const response = await fetch('/api/consultas', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            ...payload,
+            id: consultaId
+          }),
+        });
+        if (response.ok) {
+          savedToDb = true;
         }
+      } catch (dbErr) {
+        console.warn('Backend server database fallback not available (expected on some cloud environments).', dbErr);
       }
 
       // Send via FormSubmit client-side (Zero API Key configuration needed)
       try {
-        const mailResponse = await fetch("https://formsubmit.co/ajax/mesfede@gmail.com", {
+        const mailPromise = fetch("https://formsubmit.co/ajax/mesfede@gmail.com", {
           method: "POST",
           headers: { 
             'Content-Type': 'application/json',
@@ -92,6 +105,13 @@ export default function ConsultForm() {
             _honey: "" // anti-spam
           })
         });
+
+        // 2.5-second timeout for FormSubmit mail API so the user is never kept waiting
+        const timeoutPromise = new Promise<Response>((_, reject) => 
+          setTimeout(() => reject(new Error('Email api timeout')), 2500)
+        );
+
+        const mailResponse = await Promise.race([mailPromise, timeoutPromise]);
 
         if (!mailResponse.ok && !savedToDb) {
           throw new Error('No se pudo enviar la consulta por correo.');

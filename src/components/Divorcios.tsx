@@ -87,16 +87,16 @@ export default function Divorcios() {
                 return (
                   <div 
                     key={idx} 
-                    className="group flex flex-col items-start gap-4 p-5 md:p-6 rounded-xl bg-white/[0.03] backdrop-blur-md border border-white/10 shadow-lg hover:bg-brand-gold-light hover:border-brand-gold hover:-translate-y-1.5 transition-all duration-300 cursor-default"
+                    className="group flex flex-col items-start gap-4 p-5 md:p-6 rounded-xl bg-white/[0.03] backdrop-blur-md border border-white/10 shadow-lg hover:bg-brand-gold-light/15 hover:border-brand-gold/40 hover:-translate-y-1.5 transition-all duration-300 cursor-default"
                   >
-                    <div className="p-3 bg-white/5 border border-white/10 group-hover:bg-white/95 text-brand-gold-light group-hover:text-[#041627] rounded-lg transition-all duration-300 shadow-sm group-hover:scale-110 group-hover:shadow-md">
+                    <div className="p-3 bg-white/5 border border-white/10 group-hover:bg-brand-gold-light/20 text-brand-gold-light group-hover:text-white rounded-lg transition-all duration-300 shadow-sm group-hover:scale-110 group-hover:shadow-md">
                       <Icon className="w-6 h-6" />
                     </div>
                     <div>
-                      <h4 className="font-sans text-[14px] font-bold text-brand-gold-light group-hover:text-[#041627] uppercase tracking-wider mb-2 transition-colors">
+                      <h4 className="font-sans text-[14px] font-bold text-brand-gold-light group-hover:text-white uppercase tracking-wider mb-2 transition-colors">
                         {card.title}
                       </h4>
-                      <p className="font-sans text-[14px] text-slate-300 group-hover:text-[#041627]/80 leading-relaxed transition-colors">
+                      <p className="font-sans text-[14px] text-slate-300 group-hover:text-slate-100 leading-relaxed transition-colors">
                         {card.desc}
                       </p>
                     </div>

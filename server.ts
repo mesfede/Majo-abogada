@@ -155,14 +155,14 @@ app.get("/api/consultas", (req, res) => {
 
 // Endpoint: Add new consultation request
 app.post("/api/consultas", (req, res) => {
-  const { fullName, email, phone, caseType, message, aiAnalysisSummary, aiCaseCategory } = req.body;
+  const { id, fullName, email, phone, caseType, message, aiAnalysisSummary, aiCaseCategory } = req.body;
 
   if (!fullName || !email || !message) {
     return res.status(400).json({ error: "Los campos Nombre completo, Correo electrónico y Mensaje son obligatorios." });
   }
 
   const consultations = readConsultations();
-  const newId = "req_" + Date.now().toString(36) + Math.random().toString(36).substr(2, 5);
+  const newId = id || ("req_" + Date.now().toString(36) + Math.random().toString(36).substr(2, 5));
 
   const newRequest = {
     id: newId,

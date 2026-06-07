@@ -30,46 +30,66 @@ export default function Dashboard({ onBackToPublic }: DashboardProps) {
   const [filterType, setFilterType] = useState<string>('all');
   const [filterStatus, setFilterStatus] = useState<string>('all');
 
-  // Load consultations from Cloud Firestore (primary) or local Express API (fallback)
+  // Load consultations from both Cloud Firestore and local Express API, merge and deduplicate
   const fetchRequests = async () => {
     setIsLoading(true);
-    let firestoreLoaded = false;
+    let firestoreRequests: ConsultationRequest[] = [];
+    let serverRequests: ConsultationRequest[] = [];
+
+    // 1. Try to fetch from Cloud Firestore (primary)
     try {
-      // 1. Primary: Try to load directly from Cloud Firestore (critical for Vercel/production)
       const q = query(collection(db, 'consultas'), orderBy('createdAt', 'desc'));
-      const querySnapshot = await getDocs(q);
-      const data: ConsultationRequest[] = [];
+      const fetchPromise = getDocs(q);
+      const timeoutPromise = new Promise<any>((_, reject) => 
+        setTimeout(() => reject(new Error('Firestore fetch timeout')), 2000)
+      );
+
+      const querySnapshot = await Promise.race([fetchPromise, timeoutPromise]);
       querySnapshot.forEach((docSnap) => {
-        data.push(docSnap.data() as ConsultationRequest);
+        firestoreRequests.push(docSnap.data() as ConsultationRequest);
       });
-      
-      if (data.length > 0) {
-        setRequests(data);
-        if (!selectedId) {
-          // Default to the first element
-          setSelectedId(data[0].id);
-        }
-        firestoreLoaded = true;
-      }
     } catch (firestoreErr) {
-      console.warn('Firestore fetch failed or permission denied, falling back to local server...', firestoreErr);
+      console.warn('Firestore fetch failed or timed out. Bypassing cloud dataset.', firestoreErr);
     }
 
-    if (!firestoreLoaded) {
-      // 2. Fallback: Local Server JSON file (for local development or custom servers)
-      try {
-        const res = await fetch('/api/consultas');
-        if (res.ok) {
-          const data: ConsultationRequest[] = await res.json();
-          setRequests(data);
-          if (data.length > 0 && !selectedId) {
-            setSelectedId(data[0].id);
-          }
-        }
-      } catch (err) {
-        console.error('Error fetching consultations from local server fallback', err);
+    // 2. Try to fetch from local Express server API fallback
+    try {
+      const res = await fetch('/api/consultas');
+      if (res.ok) {
+        serverRequests = await res.json();
       }
+    } catch (err) {
+      console.error('Error fetching consultations from local server backup', err);
     }
+
+    // 3. Robust dataset merging and sorting
+    const mergedMap = new Map<string, ConsultationRequest>();
+    
+    // Insert server requests first
+    serverRequests.forEach((req) => {
+      if (req && req.id) {
+        mergedMap.set(req.id, req);
+      }
+    });
+
+    // Override/supplement with Firestore entries (contains latest status and notes updates)
+    firestoreRequests.forEach((req) => {
+      if (req && req.id) {
+        mergedMap.set(req.id, req);
+      }
+    });
+
+    const mergedList = Array.from(mergedMap.values()).sort((a, b) => {
+      const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+      const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+      return dateB - dateA;
+    });
+
+    setRequests(mergedList);
+    if (mergedList.length > 0 && !selectedId) {
+      setSelectedId(mergedList[0].id);
+    }
+    
     setIsLoading(false);
   };
 
@@ -97,12 +117,17 @@ export default function Dashboard({ onBackToPublic }: DashboardProps) {
   const handleUpdateStatus = async (status: 'pendiente' | 'revisado' | 'respondido') => {
     if (!selectedId) return;
     try {
-      // Try Cloud Firestore first
+      // Try Cloud Firestore first with a rapid timeout
       const docRef = doc(db, 'consultas', selectedId);
-      await updateDoc(docRef, { status });
+      const updatePromise = updateDoc(docRef, { status });
+      const timeoutPromise = new Promise<void>((_, reject) => 
+        setTimeout(() => reject(new Error('Firestore update timeout')), 1800)
+      );
+
+      await Promise.race([updatePromise, timeoutPromise]);
       setRequests(prev => prev.map(r => r.id === selectedId ? { ...r, status } : r));
     } catch (firestoreErr) {
-      console.warn('Firestore update status failed, trying static server fallback...', firestoreErr);
+      console.warn('Firestore update status failed or timed out, trying static server fallback...', firestoreErr);
       try {
         const res = await fetch(`/api/consultas/${selectedId}`, {
           method: 'PUT',
@@ -124,13 +149,18 @@ export default function Dashboard({ onBackToPublic }: DashboardProps) {
     if (!selectedId) return;
     setIsSavingNotes(true);
     try {
-      // Try Cloud Firestore first
+      // Try Cloud Firestore first with rapid timeout
       const docRef = doc(db, 'consultas', selectedId);
-      await updateDoc(docRef, { lawyerNotes });
+      const updatePromise = updateDoc(docRef, { lawyerNotes });
+      const timeoutPromise = new Promise<void>((_, reject) => 
+        setTimeout(() => reject(new Error('Firestore update timeout')), 1800)
+      );
+
+      await Promise.race([updatePromise, timeoutPromise]);
       setRequests(prev => prev.map(r => r.id === selectedId ? { ...r, lawyerNotes } : r));
       alert('Notas guardadas de forma segura en Firestore Cloud.');
     } catch (firestoreErr) {
-      console.warn('Firestore save notes failed, trying static server fallback...', firestoreErr);
+      console.warn('Firestore save notes failed or timed out, trying static server fallback...', firestoreErr);
       try {
         const res = await fetch(`/api/consultas/${selectedId}`, {
           method: 'PUT',
@@ -343,7 +373,7 @@ Estudio Jurídico Lizaso CABA / Prov. Bs. As.`;
             {/* LEFT COLUMN PANEL: Requests stack */}
             <div className="lg:col-span-5 xl:col-span-4 border border-white/5 rounded bg-slate-800/20 max-h-[640px] overflow-y-auto flex flex-col">
               <div className="p-3 border-b border-white/5 bg-white/2 flex justify-between items-center">
-                <span className="text-[10px] font-bold uppercase tracking-widest text-[#eddfb6]">Bandeja de Entrada</span>
+                <span className="text-[10px] font-bold uppercase tracking-widest text-brand-gold-light">Bandeja de Entrada</span>
                 <span className="bg-brand-gold/20 text-brand-gold-light text-[9px] font-bold px-2 rounded-full py-0.5">ESTUDIO</span>
               </div>
               <div className="divide-y divide-white/5 flex-grow">

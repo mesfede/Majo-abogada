@@ -2,11 +2,9 @@ import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { ArrowRight, Calendar, Landmark, Users, Briefcase, User, MessageSquare } from 'lucide-react';
 
-// Require the images statically so Vite correctly bundles them and injects the proper asset URL
-import bg1 from '../assets/images/female_desk_signing_1780504974026.png';
-import bg2 from '../assets/images/female_consultation_1780504985589.png';
-import bg3 from '../assets/images/female_handshake_1780504998812.png';
-import logoImg1 from '../assets/images/Majo_logo_01.png';
+// Require the video and logo statically so Vite correctly bundles them and injects the proper asset URLs
+import bgVideo from '../assets/images/Abstract_details_architectural_t…_202606071428.mp4';
+import logoImg1 from '../assets/images/Majo_logo_pink.png';
 
 interface HeroProps {
   onScrollTo: (id: string) => void;
@@ -20,7 +18,6 @@ const MENU_ITEMS = [
     titleLight: "Derecho",
     titleBold: "Sucesorio",
     desc: "Ofrecemos una gestión jurídica rigurosa de testamentos, declaratorias de herederos y transmisión ordenada de patrimonios familiares con la mayor celeridad técnica. Aseguramos y preservamos con esmero el legado de su familia mediante un acompañamiento humano, cercano y sumamente especializado.",
-    image: bg1,
     target: "sucesiones",
     icon: Landmark,
     tagline: "SUCESIONES",
@@ -33,7 +30,6 @@ const MENU_ITEMS = [
     titleLight: "Especialista en",
     titleBold: "Divorcios",
     desc: "Acompañamos procesos de mutuo acuerdo y desvinculaciones litigiosas, coordinando convenios reguladores equitativos y un reparto de bienes matrimoniales con estricto amparo legal. Priorizamos mitigar el impacto emocional garantizando siempre la máxima solidez en la defensa estratégica de sus derechos.",
-    image: bg2,
     target: "divorcios",
     icon: Users,
     tagline: "DIVORCIOS",
@@ -46,7 +42,6 @@ const MENU_ITEMS = [
     titleLight: "Derecho Civil &",
     titleBold: "Patrimonial",
     desc: "Brindamos asesoramiento integral y redacción estratégica de contratos y convenios para asegurar la máxima solidez de su patrimonio. Trazamos esquemas preventivos de primer nivel que blindan su estabilidad financiera y garantizan su plena paz mental en el largo plazo.",
-    image: bg3,
     target: "especialidades",
     icon: Briefcase,
     tagline: "CIVIL & PATRIMONIAL",
@@ -59,7 +54,6 @@ const MENU_ITEMS = [
     titleLight: "Dra. María José",
     titleBold: "Lizaso",
     desc: "Más de dos décadas de impecable excelencia académica, litigación civil activa y mediación de conflictos en el ámbito privado, priorizando siempre soluciones armoniosas y constructivas. Una vocación inquebrantable orientada a brindar respuestas ágiles, seguras y de absoluta confiabilidad.",
-    image: bg1,
     target: "nosotros",
     icon: User,
     tagline: "QUIÉN SOY",
@@ -72,7 +66,6 @@ const MENU_ITEMS = [
     titleLight: "Agendar",
     titleBold: "Consulta",
     desc: "Coordine una sesión presencial en nuestras oficinas o de forma virtual de manera inmediata para recibir un asesoramiento legal del más alto nivel adaptado a su situación. Analizamos cada escenario en detalle para trazar un plan estratégico claro, transparente, altamente protector y eficiente.",
-    image: bg3,
     target: "consulta",
     icon: MessageSquare,
     tagline: "CONTACTO",
@@ -80,20 +73,9 @@ const MENU_ITEMS = [
   }
 ];
 
-const FALLBACK_IMAGES = [
-  "https://images.unsplash.com/photo-1589829545856-d10d557cf95f?auto=format&fit=crop&q=80&w=1200",
-  "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&q=80&w=1200",
-  "https://images.unsplash.com/photo-1450133064473-71024230f91b?auto=format&fit=crop&q=80&w=1200",
-  "https://images.unsplash.com/photo-1521791136368-1a46827d52bc?auto=format&fit=crop&q=80&w=1200",
-  "https://images.unsplash.com/photo-1557804506-669a67965ba0?auto=format&fit=crop&q=80&w=1200"
-];
-
-// Fallback images the slider uses if something goes wrong
-
 export default function Hero({ onScrollTo }: HeroProps) {
   // Active index represents slide visualization synced with user hover, or auto-loop
   const [index, setIndex] = useState(0);
-  const [imageErrors, setImageErrors] = useState<boolean[]>([false, false, false, false, false]);
   const [isHovered, setIsHovered] = useState(false);
   const autoPlayTimer = useRef<NodeJS.Timeout | null>(null);
 
@@ -118,65 +100,50 @@ export default function Hero({ onScrollTo }: HeroProps) {
     setIsHovered(false);
   };
 
-  const handleImageError = (imgIdx: number) => {
-    setImageErrors((prev) => {
-      const updated = [...prev];
-      updated[imgIdx] = true;
-      return updated;
-    });
-  };
-
   return (
-    <section className="relative min-h-screen flex flex-col justify-between bg-[#041627] overflow-hidden pt-4 pb-2">
+    <section className="relative min-h-screen flex flex-col justify-between bg-[#041627] overflow-hidden pt-0 pb-2">
       
       {/* ================= BACKGROUND IMMERSIVE LAYER (FULL SCREEN / ALL HEIGHT & WIDTH) ================= */}
-      <div className="absolute inset-0 z-0 bg-[#020e1a] select-none">
-        <AnimatePresence>
-          <motion.div
-            key={index}
-            initial={{ opacity: 0, scale: 1.02 }}
-            animate={{ opacity: 0.80, scale: 1 }} // Increased opacity to 0.80 to give the image much more presence!
-            exit={{ opacity: 0, scale: 0.99 }}
-            transition={{ duration: 1.4, ease: "easeInOut" }}
-            className="absolute inset-0 w-full h-full"
-          >
-            <img
-              src={imageErrors[index] ? FALLBACK_IMAGES[index] : MENU_ITEMS[index].image}
-              alt={`Imagen ilustrativa`}
-              className="w-full h-full object-cover grayscale contrast-[1.08] brightness-[0.80]"
-              onError={() => handleImageError(index)}
-              referrerPolicy="no-referrer"
-            />
-          </motion.div>
-        </AnimatePresence>
+      <div className="absolute inset-0 z-0 bg-[#020e1a] select-none overflow-hidden">
+        {/* Immersive background video replacing multiple image slides with custom LUT grading & blur */}
+        <video
+          src={bgVideo}
+          autoPlay
+          loop
+          muted
+          playsInline
+          className="w-full h-full object-cover object-center scale-100 grayscale contrast-[1.12] brightness-[0.48] blur-[2px] opacity-60 transition-all duration-1000"
+        />
         
         {/* Softened protection overlays to allow the slide images to shine with high detail */}
-        <div className="absolute inset-0 bg-gradient-to-t from-[#041627] via-[#041627]/20 to-[#020e1a]/60 pointer-events-none" />
-        <div className="absolute inset-0 bg-gradient-to-r from-[#041627]/50 via-transparent to-[#041627]/70 pointer-events-none" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#041627] via-[#041627]/25 to-[#020e1a]/60 pointer-events-none" />
+        <div className="absolute inset-0 bg-gradient-to-r from-[#041627]/55 via-transparent to-[#041627]/75 pointer-events-none" />
+        
+        {/* Organic white light gradient from the top that integrates with the photo to light up the logo naturally */}
+        <div className="absolute inset-x-0 top-0 h-80 bg-gradient-to-b from-white/[0.18] via-white/[0.04] to-transparent pointer-events-none mix-blend-overlay" />
       </div>
 
-      {/* ================= TOP AREA: BRAND BAR HOUSING LOGO (PISANDO EL SLIDE) ================= */}
-      <div className="w-full pt-8 pb-3 px-4 md:px-8 container mx-auto max-w-[1240px] relative z-25 flex justify-center sm:justify-between items-start select-none">
-        
-        {/* Brand logo positioned at the top left, aligned with the main container */}
-        <div className="flex items-center justify-center sm:justify-start select-none pt-2 w-full sm:w-auto">
-          {/* Applied an advanced CSS filter pipeline + mix-blend-screen to perfectly isolate the logo 
-              and hide any fake white/grey checkerboard transparency grids in the image file, 
-              rendering it as a solid, crisp white logo embedded directly into the header. */}
-          <img 
-            src={logoImg1} 
-            alt="Dra. María José Lizaso" 
-            className="h-[65px] sm:h-[80px] md:h-[95px] w-auto object-contain drop-shadow-md"
-            referrerPolicy="no-referrer"
-          />
-        </div>
+      {/* ================= TOP AREA: BRAND BAR HOUSING LOGO (PISANDO EL SLIDE CON CORTE DE TRANSPARENCIA CASUAL Y DIFUMINADO) ================= */}
+      <div className="w-full bg-gradient-to-b from-white/[0.14] via-white/[0.03] to-transparent py-9 md:py-12 relative z-25 select-none transition-all duration-300">
+        <div className="w-full px-4 md:px-8 container mx-auto max-w-[1240px] flex flex-col sm:flex-row justify-between items-center gap-4">
+          
+          {/* Brand logo positioned at the top left, aligned with the main container - increased size by 15% */}
+          <div className="flex items-center justify-start sm:justify-start select-none w-full sm:w-auto">
+            <img 
+              src={logoImg1} 
+              alt="Dra. María José Lizaso" 
+              className="h-[46px] sm:h-[58px] md:h-[69px] w-auto object-contain drop-shadow-md hover:scale-[1.01] transition-all duration-300 pointer-events-auto"
+              referrerPolicy="no-referrer"
+            />
+          </div>
 
-        {/* Right matriculate registry detail for absolute architectural distinction */}
-        <div className="hidden sm:flex items-center gap-2.5 text-right opacity-60">
-          <span className="font-mono text-[9px] text-brand-gold-light font-bold tracking-[0.2em] uppercase">REG. MAT. T° VI F° 89</span>
-          <span className="w-1.5 h-1.5 rounded-full bg-brand-gold" />
-        </div>
+          {/* Right matriculate registry detail for absolute architectural distinction */}
+          <div className="hidden sm:flex items-center gap-2.5 text-right opacity-70">
+            <span className="font-mono text-[9px] text-brand-gold-light font-bold tracking-[0.2em] uppercase">REG. MAT. T° VI F° 89</span>
+            <span className="w-1.5 h-1.5 rounded-full bg-brand-gold" />
+          </div>
 
+        </div>
       </div>
 
       {/* ================= MIDDLE WORKSPACE CORE: BALANCED SLIDE-AND-MENU UNIFIED BLOCK ================= */}
@@ -240,7 +207,7 @@ export default function Hero({ onScrollTo }: HeroProps) {
               >
                 <button
                   onClick={() => onScrollTo(MENU_ITEMS[index].target)}
-                  className="bg-[#f0ece1] text-[#041627] hover:bg-white px-5 py-2.5 text-[10px] font-bold uppercase tracking-widest flex items-center gap-2 group transition-all duration-300 cursor-pointer shadow-lg hover:shadow-brand-gold/10 hover:scale-[1.02] active:scale-98 rounded-xl w-auto inline-flex"
+                  className="bg-brand-gold-light text-[#041627] hover:bg-white px-5 py-2.5 text-[10px] font-bold uppercase tracking-widest flex items-center gap-2 group transition-all duration-300 cursor-pointer shadow-lg hover:shadow-brand-gold/20 hover:scale-[1.02] active:scale-98 rounded-xl w-auto inline-flex"
                 >
                   <span className="font-sans">{MENU_ITEMS[index].buttonText}</span>
                   <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform duration-300" />
