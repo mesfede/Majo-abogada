@@ -244,11 +244,15 @@ export default function App() {
           <div className="flex gap-4">
             <button 
               onClick={() => {
-                navigator.share ? navigator.share({
-                  title: 'María José Lizaso - Abogada',
-                  text: 'Especialista en Sucesiones y Divorcios en Argentina.',
-                  url: window.location.href
-                }) : alert('Sugerencia: Copie la URL del navegador para compartir.');
+                if (navigator.share) {
+                  navigator.share({
+                    title: 'María José Lizaso - Abogada',
+                    text: 'Especialista en Sucesiones y Divorcios en Argentina.',
+                    url: window.location.href
+                  }).catch(() => {});
+                } else {
+                  navigator.clipboard.writeText(window.location.href);
+                }
               }}
               className="p-2.5 rounded-full bg-white/5 hover:bg-brand-gold/20 text-slate-300 hover:text-brand-gold-light transition-all cursor-pointer border border-white/5" 
               title="Compartir enlace de este estudio"

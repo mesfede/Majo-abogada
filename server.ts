@@ -4,6 +4,7 @@ import fs from "fs";
 import { createServer as createViteServer } from "vite";
 import { GoogleGenAI, Type } from "@google/genai";
 import dotenv from "dotenv";
+import admin from "firebase-admin";
 
 // Load local environment variables
 dotenv.config();
@@ -13,6 +14,34 @@ const PORT = 3000;
 const DATA_FILE = path.join(process.cwd(), "consultas-data.json");
 
 app.use(express.json());
+
+// Load Firebase applet configuration to dynamically resolve the Cloud Project ID
+const configPath = path.join(process.cwd(), "firebase-applet-config.json");
+let firebaseConfig: any = {};
+if (fs.existsSync(configPath)) {
+  try {
+    firebaseConfig = JSON.parse(fs.readFileSync(configPath, "utf8"));
+  } catch (err) {
+    console.error("Error reading firebase-applet-config.json", err);
+  }
+}
+
+const firebaseProjectId = process.env.VITE_FIREBASE_PROJECT_ID || firebaseConfig.projectId;
+let firestoreDb: admin.firestore.Firestore | null = null;
+
+if (firebaseProjectId) {
+  try {
+    admin.initializeApp({
+      projectId: firebaseProjectId
+    });
+    firestoreDb = admin.firestore();
+    console.log(`🤖 Firebase Admin successfully initialized for project: ${firebaseProjectId}`);
+  } catch (adminErr) {
+    console.error("❌ Failed to initialize Firebase Admin", adminErr);
+  }
+} else {
+  console.warn("⚠️ Warning: Firebase Project ID is not defined. Falling back to local JSON database.");
+}
 
 // Initialize Gemini SDK with telemetry header according to guidelines
 const geminiApiKey = process.env.GEMINI_API_KEY;
@@ -148,21 +177,118 @@ Consulta del cliente: "${message}"`;
 });
 
 // Endpoint: Get all consultations (Admin dashboard)
-app.get("/api/consultas", (req, res) => {
+app.get("/api/consultas", async (req, res) => {
+  if (firestoreDb) {
+    try {
+      const snapshot = await firestoreDb.collection("consultas").orderBy("createdAt", "desc").get();
+      const consultations: any[] = [];
+      snapshot.forEach((doc) => {
+        consultations.push({ id: doc.id, ...doc.data() });
+      });
+      return res.json(consultations);
+    } catch (firestoreErr: any) {
+      console.error("Firestore Admin query failed, reverting to local backup file.", firestoreErr);
+    }
+  }
+
   const data = readConsultations();
   res.json(data);
 });
 
 // Endpoint: Add new consultation request
-app.post("/api/consultas", (req, res) => {
+app.post("/api/consultas", async (req, res) => {
   const { id, fullName, email, phone, caseType, message, aiAnalysisSummary, aiCaseCategory } = req.body;
 
   if (!fullName || !email || !message) {
     return res.status(400).json({ error: "Los campos Nombre completo, Correo electrónico y Mensaje son obligatorios." });
   }
 
-  const consultations = readConsultations();
-  const newId = id || ("req_" + Date.now().toString(36) + Math.random().toString(36).substr(2, 5));
+  const newId = id || ("req_" + Date.now().toString(36) + Math.random().toString(36).substring(2, 7));
+
+  // Determine Gemini analysis
+  let aiAnalysisString = aiAnalysisSummary || null;
+  let aiClassification = aiCaseCategory || null;
+
+  if (!aiAnalysisString && ai) {
+    try {
+      const prompt = `Analiza detalladamente la siguiente consulta legal presentada por un cliente. 
+Determina con precisión científica y empatía legal la categoría del caso (Sucesión, Divorcio o Consulta General), el nivel de urgencia sugerido (Alta, Media, Baja), haz un resumen ejecutivo cálido y profesional orientado a acompañar al cliente, extrae puntos clave que precisan atención, recomienda pasos concretos a seguir de inmediato, y formula preguntas preliminares que la abogada María José Lizaso podría sugerirle preparar para la primera consulta.
+
+Consulta del cliente: "${message}"`;
+
+      const aiResponse = await ai.models.generateContent({
+        model: "gemini-3.5-flash",
+        contents: prompt,
+        config: {
+          systemInstruction: "Eres un asesor legal de admisión virtual sumamente idóneo, preciso y empático que trabaja para el prestigioso estudio jurídico de de la abogada María José Lizaso en Argentina (Sucesiones y Divorcios). Debes devolver un análisis estructurado y sumamente confiable en formato JSON. Tu análisis no reemplaza el consejo legal, pero guía al cliente y prepara el terreno con profesionalismo.",
+          responseMimeType: "application/json",
+          responseSchema: {
+            type: Type.OBJECT,
+            required: ["category", "urgency", "summary", "keyPoints", "recommendedSteps", "suggestedQuestions"],
+            properties: {
+              category: {
+                type: Type.STRING,
+                description: "Categoría clasificada: debe ser 'Sucesión', 'Divorcio' o 'Consulta General'."
+              },
+              urgency: {
+                type: Type.STRING,
+                description: "Grado de urgencia estimada: 'Alta', 'Media' o 'Baja'."
+              },
+              summary: {
+                type: Type.STRING,
+                description: "Resumen comprensible, empático y profesional de la consulta legal."
+              },
+              keyPoints: {
+                type: Type.ARRAY,
+                items: { type: Type.STRING },
+                description: "Puntos clave o elementos legales críticos identificados en el relato."
+              },
+              recommendedSteps: {
+                type: Type.ARRAY,
+                items: { type: Type.STRING },
+                description: "Pasos prácticos sugeridos de inmediato (ej. recopilar actas, tasar bienes, evitar conflictos intermedios)."
+              },
+              suggestedQuestions: {
+                type: Type.ARRAY,
+                items: { type: Type.STRING },
+                description: "Preguntas clave que el cliente debería pensar o responder en su primera reunión presencial/virtual."
+              }
+            }
+          }
+        }
+      });
+
+      if (aiResponse.text) {
+        aiAnalysisString = aiResponse.text.trim();
+        const parsed = JSON.parse(aiAnalysisString);
+        aiClassification = parsed.category || null;
+      }
+    } catch (aiErr) {
+      console.error("Gemini automatic analysis during ingestion failed", aiErr);
+    }
+  }
+
+  // Fallback simulation if Gemini is not set up
+  if (!aiAnalysisString) {
+    const lowerMessage = message.toLowerCase();
+    let category = "Consulta General";
+    if (lowerMessage.includes("sucesion") || lowerMessage.includes("fallecio") || lowerMessage.includes("morir") || lowerMessage.includes("herencia") || lowerMessage.includes("testamento")) {
+      category = "Sucesión";
+    } else if (lowerMessage.includes("divorcio") || lowerMessage.includes("casamiento") || lowerMessage.includes("separar") || lowerMessage.includes("hijos") || lowerMessage.includes("alimento")) {
+      category = "Divorcio";
+    }
+
+    const fallbackAnalysis = {
+      category,
+      urgency: "Media",
+      summary: `Análisis preliminar automático para ${fullName}.`,
+      keyPoints: ["Identificación de bienes/vínculos.", "Evaluación de la situación fáctica planteada."],
+      recommendedSteps: ["Agendar una cita formal para revisar documentos.", "Reunir la documentación necesaria según corresponda."],
+      suggestedQuestions: ["¿Cuáles son los plazos estimados para este trámite?", "¿Qué costos aplican?"]
+    };
+    aiAnalysisString = JSON.stringify(fallbackAnalysis);
+    aiClassification = category;
+  }
 
   const newRequest = {
     id: newId,
@@ -173,56 +299,120 @@ app.post("/api/consultas", (req, res) => {
     message,
     createdAt: new Date().toISOString(),
     status: "pendiente",
-    aiAnalysis: aiAnalysisSummary || null,
-    aiClassification: aiCaseCategory || null,
+    aiAnalysis: aiAnalysisString,
+    aiClassification: aiClassification,
     lawyerNotes: ""
   };
 
-  consultations.push(newRequest);
-  writeConsultations(consultations);
+  // 1. Write to Firestore via Admin SDK (durable cloud storage)
+  if (firestoreDb) {
+    try {
+      await firestoreDb.collection("consultas").doc(newId).set(newRequest);
+      console.log(`✅ Consultation successfully saved to cloud Firestore: ${newId}`);
+    } catch (firestoreErr) {
+      console.error("❌ Failed to save consultation to cloud Firestore via Admin.", firestoreErr);
+    }
+  }
+
+  // 2. Also write to local backup JSON file
+  try {
+    const consultations = readConsultations();
+    consultations.push(newRequest);
+    writeConsultations(consultations);
+  } catch (err) {
+    console.error("Failed to write back local backup database file", err);
+  }
 
   res.status(201).json(newRequest);
 });
 
 // Endpoint: Delete a consultation
-app.delete("/api/consultas/:id", (req, res) => {
+app.delete("/api/consultas/:id", async (req, res) => {
   const { id } = req.params;
+
+  // 1. Delete from cloud Firestore using Admin SDK
+  if (firestoreDb) {
+    try {
+      await firestoreDb.collection("consultas").doc(id).delete();
+      console.log(`✅ Consultation ${id} successfully deleted from cloud Firestore`);
+    } catch (firestoreErr) {
+      console.error("❌ Failed to delete consultation from cloud Firestore via Admin.", firestoreErr);
+    }
+  }
+
+  // 2. Delete from local backup
   let consultations = readConsultations();
   const exists = consultations.some(c => c.id === id);
 
-  if (!exists) {
-    return res.status(404).json({ error: "Solicitud no encontrada." });
+  if (exists) {
+    consultations = consultations.filter(c => c.id !== id);
+    writeConsultations(consultations);
+    res.json({ success: true, message: "Solicitud eliminada con éxito." });
+  } else {
+    // If deleted from Firestore but not in local file, return success anyway
+    res.json({ success: true, message: "Solicitud eliminada con éxito del servidor en la nube." });
   }
-
-  consultations = consultations.filter(c => c.id !== id);
-  writeConsultations(consultations);
-
-  res.json({ success: true, message: "Solicitud eliminada con éxito." });
 });
 
 // Endpoint: Edit consultation (status, notes)
-app.put("/api/consultas/:id", (req, res) => {
+app.put("/api/consultas/:id", async (req, res) => {
   const { id } = req.params;
   const { status, lawyerNotes } = req.body;
+
+  const updateFields: any = {};
+  if (status) updateFields.status = status;
+  if (lawyerNotes !== undefined) updateFields.lawyerNotes = lawyerNotes;
+
+  // 1. Save to cloud Firestore using Admin SDK
+  if (firestoreDb) {
+    try {
+      await firestoreDb.collection("consultas").doc(id).update(updateFields);
+      console.log(`✅ Consultation ${id} successfully updated in cloud Firestore`);
+    } catch (firestoreErr) {
+      console.error("❌ Failed to update consultation in cloud Firestore via Admin.", firestoreErr);
+    }
+  }
+
+  // 2. Also update local file backup
   const consultations = readConsultations();
   const itemIndex = consultations.findIndex(c => c.id === id);
 
-  if (itemIndex === -1) {
+  if (itemIndex !== -1) {
+    if (status) consultations[itemIndex].status = status;
+    if (lawyerNotes !== undefined) consultations[itemIndex].lawyerNotes = lawyerNotes;
+    writeConsultations(consultations);
+    return res.json(consultations[itemIndex]);
+  } else {
+    if (firestoreDb) {
+      try {
+        const docSnap = await firestoreDb.collection("consultas").doc(id).get();
+        if (docSnap.exists) {
+          return res.json({ id, ...docSnap.data() });
+        }
+      } catch (err) {}
+    }
     return res.status(404).json({ error: "Solicitud no encontrada." });
   }
-
-  if (status) consultations[itemIndex].status = status;
-  if (lawyerNotes !== undefined) consultations[itemIndex].lawyerNotes = lawyerNotes;
-
-  writeConsultations(consultations);
-  res.json(consultations[itemIndex]);
 });
 
 // Endpoint: AI generated email response proposal
 app.post("/api/consultas/:id/suggest-reply", async (req, res) => {
   const { id } = req.params;
-  const consultations = readConsultations();
-  const consultation = consultations.find(c => c.id === id);
+  let consultation: any = null;
+
+  if (firestoreDb) {
+    try {
+      const docSnap = await firestoreDb.collection("consultas").doc(id).get();
+      if (docSnap.exists) {
+        consultation = { id: docSnap.id, ...docSnap.data() };
+      }
+    } catch (err) {}
+  }
+
+  if (!consultation) {
+    const consultations = readConsultations();
+    consultation = consultations.find(c => c.id === id);
+  }
 
   if (!consultation) {
     return res.status(404).json({ error: "Consulta no encontrada." });

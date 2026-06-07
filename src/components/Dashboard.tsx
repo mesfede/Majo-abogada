@@ -22,6 +22,7 @@ export default function Dashboard({ onBackToPublic }: DashboardProps) {
   // States for active actions inside detailed view
   const [lawyerNotes, setLawyerNotes] = useState('');
   const [isSavingNotes, setIsSavingNotes] = useState(false);
+  const [notesSavedFeedback, setNotesSavedFeedback] = useState<string | null>(null);
   const [isGeneratingEmail, setIsGeneratingEmail] = useState(false);
   const [generatedEmail, setGeneratedEmail] = useState('');
   const [copiedText, setCopiedText] = useState(false);
@@ -148,6 +149,7 @@ export default function Dashboard({ onBackToPublic }: DashboardProps) {
   const handleSaveNotes = async () => {
     if (!selectedId) return;
     setIsSavingNotes(true);
+    setNotesSavedFeedback(null);
     try {
       // Try Cloud Firestore first with rapid timeout
       const docRef = doc(db, 'consultas', selectedId);
@@ -158,7 +160,8 @@ export default function Dashboard({ onBackToPublic }: DashboardProps) {
 
       await Promise.race([updatePromise, timeoutPromise]);
       setRequests(prev => prev.map(r => r.id === selectedId ? { ...r, lawyerNotes } : r));
-      alert('Notas guardadas de forma segura en Firestore Cloud.');
+      setNotesSavedFeedback('Notas guardadas de forma segura en Firestore Cloud.');
+      setTimeout(() => setNotesSavedFeedback(null), 4000);
     } catch (firestoreErr) {
       console.warn('Firestore save notes failed or timed out, trying static server fallback...', firestoreErr);
       try {
@@ -170,10 +173,13 @@ export default function Dashboard({ onBackToPublic }: DashboardProps) {
         if (res.ok) {
           const updatedItem = await res.json();
           setRequests(prev => prev.map(r => r.id === selectedId ? updatedItem : r));
-          alert('Notas guardadas de forma segura en el servidor de expedientes.');
+          setNotesSavedFeedback('Notas guardadas de forma segura en el servidor de expedientes.');
+          setTimeout(() => setNotesSavedFeedback(null), 4000);
         }
       } catch (err) {
         console.error('Error saving notes on server', err);
+        setNotesSavedFeedback('Error al guardar las notas.');
+        setTimeout(() => setNotesSavedFeedback(null), 4000);
       }
     } finally {
       setIsSavingNotes(false);
@@ -567,14 +573,21 @@ Estudio Jurídico Lizaso CABA / Prov. Bs. As.`;
                           placeholder="Anote impresiones, juzgado de radicación, plazos críticos, o recordatorios de esta causa..."
                           className="w-full bg-slate-900 border border-white/5 focus:border-brand-gold outline-none p-4 text-xs text-slate-200 leading-relaxed rounded resize-none"
                         />
-                        <button
-                          onClick={handleSaveNotes}
-                          disabled={isSavingNotes}
-                          className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 font-bold uppercase text-[10px] tracking-widest flex items-center gap-1.5 cursor-pointer ml-auto transition-all"
-                        >
-                          <Save className="w-3.5 h-3.5" />
-                          <span>{isSavingNotes ? 'Guardando...' : 'Guardar Notas'}</span>
-                        </button>
+                        <div className="flex items-center justify-between gap-2 mt-1">
+                          {notesSavedFeedback ? (
+                            <span className="text-[10px] font-medium text-emerald-400 block animate-pulse">
+                              {notesSavedFeedback}
+                            </span>
+                          ) : <div />}
+                          <button
+                            onClick={handleSaveNotes}
+                            disabled={isSavingNotes}
+                            className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 font-bold uppercase text-[10px] tracking-widest flex items-center gap-1.5 cursor-pointer transition-all"
+                          >
+                            <Save className="w-3.5 h-3.5" />
+                            <span>{isSavingNotes ? 'Guardando...' : 'Guardar Notas'}</span>
+                          </button>
+                        </div>
                       </div>
 
                       {/* automated drafts */}
