@@ -74,7 +74,7 @@ export default function Sucesiones() {
             
             {/* Elements list matching original structure */}
             <div className="flex flex-col space-y-4 pt-4">
-              <div className="group flex items-center gap-4 p-3 md:p-4 rounded-xl bg-white/70 backdrop-blur-sm border border-brand-primary/5 shadow-sm hover:shadow-md hover:bg-[#eddfb6] hover:border-[#ebd59a] transition-all duration-300 cursor-default">
+              <div className="group flex items-center gap-4 p-3 md:p-4 rounded-xl bg-white/70 backdrop-blur-sm border border-brand-primary/5 shadow-sm hover:shadow-md hover:bg-brand-gold-light/20 hover:border-brand-gold/30 transition-all duration-300 cursor-default">
                 <div className="p-2.5 bg-neutral-100/80 group-hover:bg-white/60 rounded-lg text-brand-gold group-hover:text-[#041627] border border-brand-primary/5 transition-colors">
                   <Landmark className="w-5 h-5" />
                 </div>
@@ -88,7 +88,7 @@ export default function Sucesiones() {
                 </div>
               </div>
               
-              <div className="group flex items-center gap-4 p-3 md:p-4 rounded-xl bg-white/70 backdrop-blur-sm border border-brand-primary/5 shadow-sm hover:shadow-md hover:bg-[#eddfb6] hover:border-[#ebd59a] transition-all duration-300 cursor-default">
+              <div className="group flex items-center gap-4 p-3 md:p-4 rounded-xl bg-white/70 backdrop-blur-sm border border-brand-primary/5 shadow-sm hover:shadow-md hover:bg-brand-gold-light/20 hover:border-brand-gold/30 transition-all duration-300 cursor-default">
                 <div className="p-2.5 bg-neutral-100/80 group-hover:bg-white/60 rounded-lg text-brand-gold group-hover:text-[#041627] border border-brand-primary/5 transition-colors">
                   <Scale className="w-5 h-5" />
                 </div>
@@ -102,7 +102,7 @@ export default function Sucesiones() {
                 </div>
               </div>
               
-              <div className="group flex items-center gap-4 p-3 md:p-4 rounded-xl bg-white/70 backdrop-blur-sm border border-brand-primary/5 shadow-sm hover:shadow-md hover:bg-[#eddfb6] hover:border-[#ebd59a] transition-all duration-300 cursor-default">
+              <div className="group flex items-center gap-4 p-3 md:p-4 rounded-xl bg-white/70 backdrop-blur-sm border border-brand-primary/5 shadow-sm hover:shadow-md hover:bg-brand-gold-light/20 hover:border-brand-gold/30 transition-all duration-300 cursor-default">
                 <div className="p-2.5 bg-neutral-100/80 group-hover:bg-white/60 rounded-lg text-brand-gold group-hover:text-[#041627] border border-brand-primary/5 transition-colors">
                   <FileText className="w-5 h-5" />
                 </div>

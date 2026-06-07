@@ -57,12 +57,12 @@ export default function Divorcios() {
             className="w-full lg:w-5/12 space-y-6 pt-6"
           >
             <div>
-              <span className="font-sans text-xs uppercase tracking-[0.25em] text-[#ebd59a]/90 font-bold block mb-4">
+              <span className="font-sans text-xs uppercase tracking-[0.25em] text-brand-gold-light/90 font-bold block mb-4">
                 Especialidad en Divorcios
               </span>
               <div className="flex items-center gap-4 mb-6">
-                <Users className="w-8 h-8 md:w-10 md:h-10 text-[#ebd59a] stroke-[1.5]" />
-                <div className="h-10 w-[1px] bg-[#ebd59a]/30"></div>
+                <Users className="w-8 h-8 md:w-10 md:h-10 text-brand-gold-light stroke-[1.5]" />
+                <div className="h-10 w-[1px] bg-brand-gold-light/30"></div>
                 <h2 className="font-display text-3xl md:text-4xl lg:text-5xl text-white m-0 p-0">
                   <span className="font-medium">Divorcios</span>
                 </h2>
@@ -87,13 +87,13 @@ export default function Divorcios() {
                 return (
                   <div 
                     key={idx} 
-                    className="group flex flex-col items-start gap-4 p-5 md:p-6 rounded-xl bg-white/[0.03] backdrop-blur-md border border-white/10 shadow-lg hover:bg-[#eddfb6] hover:border-[#ebd59a] hover:-translate-y-1.5 transition-all duration-300 cursor-default"
+                    className="group flex flex-col items-start gap-4 p-5 md:p-6 rounded-xl bg-white/[0.03] backdrop-blur-md border border-white/10 shadow-lg hover:bg-brand-gold-light hover:border-brand-gold hover:-translate-y-1.5 transition-all duration-300 cursor-default"
                   >
-                    <div className="p-3 bg-white/5 border border-white/10 group-hover:bg-white/95 text-[#ebd59a] group-hover:text-[#041627] rounded-lg transition-all duration-300 shadow-sm group-hover:scale-110 group-hover:shadow-md">
+                    <div className="p-3 bg-white/5 border border-white/10 group-hover:bg-white/95 text-brand-gold-light group-hover:text-[#041627] rounded-lg transition-all duration-300 shadow-sm group-hover:scale-110 group-hover:shadow-md">
                       <Icon className="w-6 h-6" />
                     </div>
                     <div>
-                      <h4 className="font-sans text-[14px] font-bold text-[#ebd59a] group-hover:text-[#041627] uppercase tracking-wider mb-2 transition-colors">
+                      <h4 className="font-sans text-[14px] font-bold text-brand-gold-light group-hover:text-[#041627] uppercase tracking-wider mb-2 transition-colors">
                         {card.title}
                       </h4>
                       <p className="font-sans text-[14px] text-slate-300 group-hover:text-[#041627]/80 leading-relaxed transition-colors">

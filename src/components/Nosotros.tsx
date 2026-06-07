@@ -37,7 +37,7 @@ export default function Nosotros() {
             transition={{ duration: 0.8, ease: "easeOut" }}
             className="lg:col-span-4 flex flex-col items-center justify-center text-center space-y-4 pt-4"
           >
-            <div className="relative w-48 h-48 md:w-56 md:h-56 rounded-full overflow-hidden shadow-xl border-4 border-[#eddfb6] bg-neutral-100 group">
+            <div className="relative w-48 h-48 md:w-56 md:h-56 rounded-full overflow-hidden shadow-xl border-4 border-brand-gold-light bg-neutral-100 group">
               <img 
                 src={profileImg} 
                 alt="Dra. María José Lizaso" 
@@ -86,7 +86,7 @@ export default function Nosotros() {
               </p>
 
               <div className="flex gap-4 p-4 bg-neutral-50 rounded border border-brand-primary/5 shadow-sm">
-                <div className="p-2 bg-[#eddfb6] text-[#041627] rounded font-bold h-fit">
+                <div className="p-2 bg-brand-gold-light text-[#041627] rounded font-bold h-fit">
                   <Award className="w-5 h-5" />
                 </div>
                 <div>
@@ -107,7 +107,7 @@ export default function Nosotros() {
                   const Icon = pillar.icon;
                   return (
                     <div key={index} className="group flex gap-4 items-start p-4 rounded-lg hover:bg-neutral-50 border border-transparent hover:border-brand-primary/5 transition-colors duration-300">
-                      <div className="p-3 bg-brand-primary/5 group-hover:bg-[#eddfb6]/30 text-brand-gold group-hover:text-brand-primary transition-colors rounded-lg flex-shrink-0">
+                      <div className="p-3 bg-brand-primary/5 group-hover:bg-brand-gold-light/30 text-brand-gold group-hover:text-brand-primary transition-colors rounded-lg flex-shrink-0">
                         <Icon className="w-5 h-5" />
                       </div>
                       <div>

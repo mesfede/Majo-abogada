@@ -80,7 +80,7 @@ export default function Especialidades() {
                 return (
                   <div 
                     key={idx} 
-                    className="group bg-white/80 backdrop-blur-sm border border-brand-primary/5 p-4 md:p-5 shadow-sm hover:shadow-lg flex items-start gap-4 rounded-xl hover:bg-[#eddfb6] hover:border-[#ebd59a] hover:-translate-y-1.5 transition-all duration-300 cursor-default"
+                    className="group bg-white/80 backdrop-blur-sm border border-brand-primary/5 p-4 md:p-5 shadow-sm hover:shadow-lg flex items-start gap-4 rounded-xl hover:bg-brand-gold-light hover:border-brand-gold hover:-translate-y-1.5 transition-all duration-300 cursor-default"
                   >
                     <div className="text-brand-gold flex-shrink-0 pt-0.5 group-hover:text-[#041627] transition-all duration-300 group-hover:scale-110">
                       <Icon className="w-5 h-5" />
