@@ -59,9 +59,9 @@ export default function ConsultForm() {
           lawyerNotes: ''
         });
 
-        // 2-second timeout to avoid staying stuck on "Enviando Solicitud..." when Firebase is cold or blocked
+        // 15-second timeout to avoid staying stuck on "Enviando Solicitud..." when Firebase is cold or blocked
         const timeoutPromise = new Promise((_, reject) => 
-          setTimeout(() => reject(new Error('Firebase timeout')), 2000)
+          setTimeout(() => reject(new Error('Firebase timeout')), 15000)
         );
 
         await Promise.race([savePromise, timeoutPromise]);

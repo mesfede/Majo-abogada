@@ -18,6 +18,7 @@ export default function Dashboard({ onBackToPublic }: DashboardProps) {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [activeRequest, setActiveRequest] = useState<ConsultationRequest | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [authError, setAuthError] = useState<string | null>(null);
 
   // States for active actions inside detailed view
   const [lawyerNotes, setLawyerNotes] = useState('');
@@ -42,15 +43,19 @@ export default function Dashboard({ onBackToPublic }: DashboardProps) {
       const q = query(collection(db, 'consultas'), orderBy('createdAt', 'desc'));
       const fetchPromise = getDocs(q);
       const timeoutPromise = new Promise<any>((_, reject) => 
-        setTimeout(() => reject(new Error('Firestore fetch timeout')), 2000)
+        setTimeout(() => reject(new Error('Firestore fetch timeout')), 15000)
       );
 
       const querySnapshot = await Promise.race([fetchPromise, timeoutPromise]);
       querySnapshot.forEach((docSnap) => {
         firestoreRequests.push(docSnap.data() as ConsultationRequest);
       });
-    } catch (firestoreErr) {
+      setAuthError(null);
+    } catch (firestoreErr: any) {
       console.warn('Firestore fetch failed or timed out. Bypassing cloud dataset.', firestoreErr);
+      if (firestoreErr?.code === 'permission-denied' || firestoreErr?.message?.toLowerCase().includes('permission')) {
+        setAuthError('Acceso denegado a Firestore. Es necesario iniciar sesión con Google (Cuenta Oficial) para ver los registros confidenciales.');
+      }
     }
 
     // 2. Try to fetch from local Express server API fallback
@@ -122,7 +127,7 @@ export default function Dashboard({ onBackToPublic }: DashboardProps) {
       const docRef = doc(db, 'consultas', selectedId);
       const updatePromise = updateDoc(docRef, { status });
       const timeoutPromise = new Promise<void>((_, reject) => 
-        setTimeout(() => reject(new Error('Firestore update timeout')), 1800)
+        setTimeout(() => reject(new Error('Firestore update timeout')), 15000)
       );
 
       await Promise.race([updatePromise, timeoutPromise]);
@@ -155,7 +160,7 @@ export default function Dashboard({ onBackToPublic }: DashboardProps) {
       const docRef = doc(db, 'consultas', selectedId);
       const updatePromise = updateDoc(docRef, { lawyerNotes });
       const timeoutPromise = new Promise<void>((_, reject) => 
-        setTimeout(() => reject(new Error('Firestore update timeout')), 1800)
+        setTimeout(() => reject(new Error('Firestore update timeout')), 15000)
       );
 
       await Promise.race([updatePromise, timeoutPromise]);
@@ -364,6 +369,24 @@ Estudio Jurídico Lizaso CABA / Prov. Bs. As.`;
           <div className="flex-1 flex flex-col justify-center items-center py-24 gap-4">
             <Loader2 className="w-10 h-10 animate-spin text-brand-gold" />
             <p className="text-slate-400 text-sm">Cargando base de consultas del tribunal virtual...</p>
+          </div>
+        ) : authError ? (
+          <div className="flex-1 border border-red-500/20 bg-red-500/5 rounded-lg p-16 text-center text-red-200 flex flex-col items-center justify-center gap-4">
+            <AlertTriangle className="w-12 h-12 text-red-500" />
+            <h3 className="font-sans text-lg font-bold text-red-400">Error de Autenticación</h3>
+            <p className="max-w-md text-xs leading-relaxed text-red-300">
+              {authError}
+            </p>
+            <button 
+              onClick={() => {
+                localStorage.removeItem('abogada_authenticated');
+                localStorage.removeItem('abogada_email');
+                window.location.reload();
+              }}
+              className="mt-4 bg-red-500/20 text-red-300 hover:bg-red-500/30 px-6 py-2 rounded-lg text-xs font-bold uppercase tracking-wider transition-colors border border-red-500/30"
+            >
+              Cerrar Sesión e Ingresar con Google
+            </button>
           </div>
         ) : filteredRequests.length === 0 ? (
           <div className="flex-1 border border-dashed border-white/10 rounded-lg p-16 text-center text-slate-400 flex flex-col items-center justify-center gap-4">
