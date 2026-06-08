@@ -39,8 +39,8 @@ export default function Especialidades() {
   return (
     <section className="py-24 bg-neutral-100 relative overflow-hidden" id="especialidades">
       {/* Giant Graphic Typography Background */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full flex items-center justify-center pointer-events-none select-none z-0 overflow-hidden opacity-[0.03]">
-        <span className="font-display font-black text-[25rem] lg:text-[38rem] leading-none tracking-[0.05em] text-[#041627] whitespace-nowrap">
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full flex items-center justify-center pointer-events-none select-none z-0 overflow-hidden opacity-[0.015]">
+        <span className="font-display font-black text-[35rem] lg:text-[55rem] leading-none tracking-[0.05em] text-[#0a2240] whitespace-nowrap">
           ESPECIALIDADES
         </span>
       </div>
@@ -82,12 +82,12 @@ export default function Especialidades() {
                     key={idx} 
                     className="group bg-white/80 backdrop-blur-sm border border-brand-primary/5 p-4 md:p-5 shadow-sm hover:shadow-lg flex items-start gap-4 rounded-xl hover:bg-brand-gold-light/20 hover:border-brand-gold/30 hover:-translate-y-1.5 transition-all duration-300 cursor-default"
                   >
-                    <div className="text-brand-gold flex-shrink-0 pt-0.5 group-hover:text-[#041627] transition-all duration-300 group-hover:scale-110">
+                    <div className="text-brand-gold flex-shrink-0 pt-0.5 group-hover:text-[#0a2240] transition-all duration-300 group-hover:scale-110">
                       <Icon className="w-5 h-5" />
                     </div>
                     <div>
-                      <h4 className="font-sans text-[13px] font-bold text-brand-primary group-hover:text-[#041627] uppercase tracking-wide mb-1 transition-colors">{specialty.title}</h4>
-                      <p className="font-sans text-[13px] text-neutral-500 group-hover:text-[#041627]/80 leading-snug transition-colors">{specialty.desc}</p>
+                      <h4 className="font-sans text-[13px] font-bold text-brand-primary group-hover:text-[#0a2240] uppercase tracking-wide mb-1 transition-colors">{specialty.title}</h4>
+                      <p className="font-sans text-[13px] text-neutral-500 group-hover:text-[#0a2240]/80 leading-snug transition-colors">{specialty.desc}</p>
                     </div>
                   </div>
                 );

@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion } from 'motion/react';
 import { ShieldCheck, HeartHandshake, Eye, Award, User } from 'lucide-react';
-import profileImg from '../assets/images/Majo_foto.png';
+import profileImg from '../assets/images/majo_foto_CV.png';
 
 export default function Nosotros() {
   const pillars = [
@@ -23,8 +23,14 @@ export default function Nosotros() {
   ];
 
   return (
-    <section className="py-24 bg-white" id="nosotros">
-      <div className="max-w-[1280px] mx-auto px-6 md:px-16">
+    <section className="py-24 bg-white relative overflow-hidden" id="nosotros">
+      {/* Giant Graphic Typography Background */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full flex items-center justify-center pointer-events-none select-none z-0 overflow-hidden opacity-[0.015]">
+        <span className="font-display font-black text-[35rem] lg:text-[55rem] leading-none tracking-[0.05em] text-[#0a2240] whitespace-nowrap">
+          TRAYECTORIA
+        </span>
+      </div>
+      <div className="max-w-[1280px] mx-auto px-6 md:px-16 relative z-10">
         
         {/* About section profile split */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-start">
@@ -37,11 +43,11 @@ export default function Nosotros() {
             transition={{ duration: 0.8, ease: "easeOut" }}
             className="lg:col-span-4 flex flex-col items-center justify-center text-center space-y-4 pt-4"
           >
-            <div className="relative w-48 h-48 md:w-56 md:h-56 rounded-full overflow-hidden shadow-xl border-4 border-brand-gold-light bg-neutral-100 group">
+            <div className="relative w-56 h-72 md:w-64 md:h-[22rem] rounded-[2rem] overflow-hidden shadow-xl border-4 border-brand-gold-light bg-neutral-100 group">
               <img 
                 src={profileImg} 
                 alt="Dra. María José Lizaso" 
-                className="w-full h-full object-cover grayscale opacity-90 contrast-[1.1] transition-transform duration-700 group-hover:scale-105"
+                className="w-full h-full object-cover object-[center_15%] grayscale opacity-90 contrast-[1.1] transition-transform duration-700 group-hover:scale-105"
               />
               {/* Duotone subtle gold overlay to match the brand */}
               <div className="absolute inset-0 bg-brand-gold/15 mix-blend-color pointer-events-none" />
@@ -86,7 +92,7 @@ export default function Nosotros() {
               </p>
 
               <div className="flex gap-4 p-4 bg-neutral-50 rounded border border-brand-primary/5 shadow-sm">
-                <div className="p-2 bg-brand-gold-light text-[#041627] rounded font-bold h-fit">
+                <div className="p-2 bg-brand-gold-light text-[#0a2240] rounded font-bold h-fit">
                   <Award className="w-5 h-5" />
                 </div>
                 <div>

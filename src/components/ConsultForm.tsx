@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Send, Sparkles, CheckCircle, AlertCircle, FileCheck, HelpCircle, Loader2 } from 'lucide-react';
+import { Send, Sparkles, CheckCircle, AlertCircle, FileCheck, HelpCircle, Loader2, Calendar } from 'lucide-react';
 import { CaseAnalysis } from '../types';
 import { db } from '../firebase';
 import { collection, doc, setDoc } from 'firebase/firestore';
@@ -142,23 +142,36 @@ export default function ConsultForm() {
       {/* Absolute decorative backgrounds pattern */}
       <div className="absolute right-0 bottom-0 top-0 left-0 pointer-events-none opacity-[0.03]" style={{ backgroundImage: "url('https://www.transparenttextures.com/patterns/natural-paper.png')" }}></div>
 
-      <div className="max-w-[800px] mx-auto px-6 relative z-10">
+      {/* Giant Graphic Typography Background */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full flex items-center justify-center pointer-events-none select-none z-0 overflow-hidden opacity-[0.015]">
+        <span className="font-display font-black text-[35rem] lg:text-[55rem] leading-none tracking-[0.05em] text-[#0a2240] whitespace-nowrap">
+          CONTACTO
+        </span>
+      </div>
+
+      <div className="max-w-[680px] mx-auto px-6 relative z-10">
         
         <motion.div 
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "0px 0px -100px 0px" }}
           transition={{ duration: 0.8, ease: "easeOut" }}
-          className="text-center mb-16"
+          className="mb-10 text-left"
         >
-          <span className="font-sans text-xs uppercase tracking-[0.25em] text-brand-gold font-bold block mb-3">
-            Atención Profesional
+          <span className="font-sans text-xs uppercase tracking-[0.25em] text-brand-gold font-bold block mb-4">
+            Atención Personalizada
           </span>
-          <h2 className="font-display text-3xl md:text-4xl text-brand-primary font-bold uppercase tracking-wider mb-4">
-            Agendar una Consulta Profesional
-          </h2>
-          <p className="font-sans text-sm md:text-base text-[#44474c] max-w-xl mx-auto leading-relaxed">
-            Complete el formulario brindando los detalles esenciales y nos pondremos en contacto a la brevedad para realizar una evaluación jurídica rigurosa de su situación.
+          
+          <div className="flex items-center gap-4 mb-6">
+            <Calendar className="w-8 h-8 md:w-10 md:h-10 text-brand-gold stroke-[1.5]" />
+            <div className="h-10 w-[1px] bg-brand-gold/30"></div>
+            <h2 className="font-display text-3xl md:text-4xl lg:text-5xl text-brand-primary leading-none m-0 p-0">
+              <span className="font-light">Agendar</span> <span className="font-semibold">Consulta</span>
+            </h2>
+          </div>
+
+          <p className="font-sans text-xs md:text-sm text-[#44474c] leading-relaxed max-w-lg">
+            Complete el formulario brindando los detalles esenciales y nos pondremos en contacto a la brevedad para realizar una evaluación.
           </p>
         </motion.div>
 
@@ -167,20 +180,20 @@ export default function ConsultForm() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "0px 0px -100px 0px" }}
           transition={{ duration: 0.8, ease: "easeOut", delay: 0.2 }}
-          className="bg-white p-8 md:p-12 shadow-xl border border-brand-primary/5"
+          className="bg-white p-6 md:p-8 shadow-xl border border-brand-primary/5 rounded-2xl"
         >
           <AnimatePresence mode="wait">
             {!submitted ? (
               <motion.form 
                 onSubmit={handleSubmit} 
-                className="space-y-8"
+                className="space-y-5"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
               >
                 
                 {/* Personal Information row */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                   <div className="space-y-2 group">
                     <label className="font-sans text-[11px] font-bold text-brand-primary uppercase tracking-wider block">
                       Nombre Completo <span className="text-red-500">*</span>
@@ -211,7 +224,7 @@ export default function ConsultForm() {
                 </div>
 
                 {/* contact row & case select */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                   <div className="space-y-2">
                     <label className="font-sans text-[11px] font-bold text-brand-primary uppercase tracking-wider block">
                       Teléfono de Contacto
@@ -250,37 +263,37 @@ export default function ConsultForm() {
                   </div>
 
                   <textarea 
-                    rows={5}
+                    rows={4}
                     required
                     placeholder="Describa brevemente los hechos (ej: fallecimiento de allegado, bienes involucrados, testamentos, intenciones de divorcio, acuerdos intermedios, etc.)"
                     value={message}
                     onChange={(e) => setMessage(e.target.value)}
-                    className="w-full bg-transparent border border-brand-primary/10 focus:border-brand-gold focus:ring-1 focus:ring-brand-gold/20 transition-all py-3 px-4 text-sm text-brand-primary placeholder:text-neutral-400 outline-none resize-none leading-relaxed"
+                    className="w-full bg-transparent border border-brand-primary/10 focus:border-brand-gold focus:ring-1 focus:ring-brand-gold/20 transition-all py-2.5 px-4 text-xs text-brand-primary placeholder:text-neutral-400 outline-none resize-none leading-relaxed rounded-lg"
                   />
                 </div>
 
                 {submitError && (
-                  <div className="p-4 bg-red-50 text-red-700 text-xs rounded border border-red-150 font-medium">
+                  <div className="p-3 bg-red-50 text-red-700 text-xs rounded border border-red-100 font-medium">
                     {submitError}
                   </div>
                 )}
 
                 {/* Form Buttons */}
-                <div className="pt-4 flex justify-center">
+                <div className="pt-2 flex justify-center">
                   <button
                     type="submit"
                     disabled={isSubmitting}
-                    className="bg-brand-primary text-white hover:bg-black/90 active:scale-98 border border-brand-primary px-16 py-4.5 text-xs font-bold uppercase tracking-widest cursor-pointer shadow-lg hover:shadow-xl transition-all flex items-center justify-center gap-2 min-w-[280px]"
+                    className="bg-brand-primary text-white hover:bg-black/90 active:scale-98 border border-brand-primary px-12 py-3.5 text-xs font-bold uppercase tracking-widest cursor-pointer shadow-lg hover:shadow-xl transition-all flex items-center justify-center gap-2 min-w-[250px] rounded-xl"
                   >
                     {isSubmitting ? (
                       <>
                         <Loader2 className="w-4 h-4 animate-spin" />
-                        <span>Enviando Solicitud...</span>
+                        <span>Enviando...</span>
                       </>
                     ) : (
                       <>
                         <Send className="w-3.5 h-3.5" />
-                        <span>Enviar Solicitud de Consulta</span>
+                        <span>Enviar Consulta</span>
                       </>
                     )}
                   </button>

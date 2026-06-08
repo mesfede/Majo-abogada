@@ -84,28 +84,38 @@ export default function Hero({ onScrollTo }: HeroProps) {
   const video1Ref = useRef<HTMLVideoElement>(null);
   const video2Ref = useRef<HTMLVideoElement>(null);
 
+  // Smooth play/pause management to prevent decoding two high-res video streams simultaneously
   useEffect(() => {
-    if (video1Ref.current) {
-      video1Ref.current.play().catch(console.error);
-    }
-  }, []);
-
-  const handleTimeUpdate = (e: React.SyntheticEvent<HTMLVideoElement, Event>, idx: number) => {
-    const video = e.currentTarget;
-    if (video.duration > 0 && video.duration - video.currentTime < 1.5) {
-      if (activeVideo === idx) {
-        const nextIndex = (idx + 1) % 2;
-        setActiveVideo(nextIndex);
-        if (nextIndex === 0 && video1Ref.current) {
-          video1Ref.current.currentTime = 0;
-          video1Ref.current.play().catch(console.error);
-        } else if (nextIndex === 1 && video2Ref.current) {
-          video2Ref.current.currentTime = 0;
-          video2Ref.current.play().catch(console.error);
-        }
+    if (activeVideo === 0) {
+      if (video1Ref.current) {
+        video1Ref.current.play().catch(() => {});
       }
+      const timer = setTimeout(() => {
+        if (video2Ref.current) {
+          video2Ref.current.pause();
+        }
+      }, 2000); // Wait for transition fade to complete before pausing the source element
+      return () => clearTimeout(timer);
+    } else {
+      if (video2Ref.current) {
+        video2Ref.current.play().catch(() => {});
+      }
+      const timer = setTimeout(() => {
+        if (video1Ref.current) {
+          video1Ref.current.pause();
+        }
+      }, 2000); // Wait for transition fade to complete before pausing the source element
+      return () => clearTimeout(timer);
     }
-  };
+  }, [activeVideo]);
+
+  // Smooth continuous looping of background videos with safe automatic interval cross-fading
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setActiveVideo((prev) => (prev === 0 ? 1 : 0));
+    }, 12000); // Seamlessly change slides every 12 seconds
+    return () => clearInterval(interval);
+  }, []);
 
   // Auto-play background transition cycle when user is not hovering options
   useEffect(() => {
@@ -129,34 +139,42 @@ export default function Hero({ onScrollTo }: HeroProps) {
   };
 
   return (
-    <section className="relative min-h-screen flex flex-col justify-between bg-[#041627] overflow-hidden pt-0 pb-2">
+    <section className="relative min-h-screen flex flex-col justify-between bg-[#0a2240] overflow-hidden pt-0 pb-2">
       
       {/* ================= BACKGROUND IMMERSIVE LAYER (FULL SCREEN / ALL HEIGHT & WIDTH) ================= */}
-      <div className="absolute inset-0 z-0 bg-[#020e1a] select-none overflow-hidden">
+      <div className="absolute inset-0 z-0 bg-[#041529] select-none overflow-hidden">
         {/* Immersive background video replacing multiple image slides with custom LUT grading & blur */}
         <video
           ref={video1Ref}
           src={bgVideo}
           muted
+          loop
           playsInline
-          onTimeUpdate={(e) => handleTimeUpdate(e, 0)}
-          className={`absolute inset-0 w-full h-full object-cover object-center scale-100 grayscale contrast-[1.12] brightness-[0.48] blur-[2px] transition-opacity duration-[1500ms] ${activeVideo === 0 ? 'opacity-60' : 'opacity-0'}`}
+          preload="auto"
+          className={`absolute inset-0 w-full h-full object-cover object-center scale-100 grayscale contrast-[1.12] brightness-[0.65] transition-opacity duration-[1800ms] ${activeVideo === 0 ? 'opacity-73' : 'opacity-0'}`}
         />
         <video
           ref={video2Ref}
           src={bgVideo2}
           muted
+          loop
           playsInline
-          onTimeUpdate={(e) => handleTimeUpdate(e, 1)}
-          className={`absolute inset-0 w-full h-full object-cover object-center scale-100 grayscale contrast-[1.12] brightness-[0.48] blur-[2px] transition-opacity duration-[1500ms] ${activeVideo === 1 ? 'opacity-60' : 'opacity-0'}`}
+          preload="auto"
+          className={`absolute inset-0 w-full h-full object-cover object-center scale-100 grayscale contrast-[1.12] brightness-[0.65] transition-opacity duration-[1800ms] ${activeVideo === 1 ? 'opacity-73' : 'opacity-0'}`}
         />
         
+        {/* Single hardware-accelerated static backdrop blur filter instead of blurring dynamic video streams frame-by-frame */}
+        <div className="absolute inset-0 backdrop-blur-[1.5px] pointer-events-none z-1" />
+
         {/* Softened protection overlays to allow the slide images to shine with high detail */}
-        <div className="absolute inset-0 bg-gradient-to-t from-[#041627] via-[#041627]/25 to-[#020e1a]/60 pointer-events-none" />
-        <div className="absolute inset-0 bg-gradient-to-r from-[#041627]/55 via-transparent to-[#041627]/75 pointer-events-none" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#0a2240] via-[#0a2240]/20 to-[#041529]/50 pointer-events-none z-2" />
+        <div className="absolute inset-0 bg-gradient-to-r from-[#0a2240]/45 via-transparent to-[#0a2240]/65 pointer-events-none z-2" />
         
         {/* Organic white light gradient from the top that integrates with the photo to light up the logo naturally */}
-        <div className="absolute inset-x-0 top-0 h-80 bg-gradient-to-b from-white/[0.18] via-white/[0.04] to-transparent pointer-events-none mix-blend-overlay" />
+        <div className="absolute inset-x-0 top-0 h-80 bg-gradient-to-b from-white/[0.22] via-white/[0.06] to-transparent pointer-events-none mix-blend-overlay z-2" />
+        
+        {/* Ambient radial glow to illuminate the background of the slides */}
+        <div className="absolute top-1/2 left-1/4 -translate-y-1/2 w-[700px] h-[700px] bg-brand-gold-light/10 rounded-full blur-[140px] pointer-events-none mix-blend-screen z-2" />
       </div>
 
       {/* ================= TOP AREA: BRAND BAR HOUSING LOGO (PISANDO EL SLIDE CON CORTE DE TRANSPARENCIA CASUAL Y DIFUMINADO) ================= */}
@@ -243,7 +261,7 @@ export default function Hero({ onScrollTo }: HeroProps) {
               >
                 <button
                   onClick={() => onScrollTo(MENU_ITEMS[index].target)}
-                  className="bg-brand-gold-light text-[#041627] hover:bg-white px-5 py-2.5 text-[10px] font-bold uppercase tracking-widest flex items-center gap-2 group transition-all duration-300 cursor-pointer shadow-lg hover:shadow-brand-gold/20 hover:scale-[1.02] active:scale-98 rounded-xl w-auto inline-flex"
+                  className="bg-brand-gold-light text-[#0a2240] hover:bg-white px-5 py-2.5 text-[10px] font-bold uppercase tracking-widest flex items-center gap-2 group transition-all duration-300 cursor-pointer shadow-lg hover:shadow-brand-gold/20 hover:scale-[1.02] active:scale-98 rounded-xl w-auto inline-flex"
                 >
                   <span className="font-sans">{MENU_ITEMS[index].buttonText}</span>
                   <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform duration-300" />
@@ -284,10 +302,10 @@ export default function Hero({ onScrollTo }: HeroProps) {
                       onMouseEnter={() => handleMenuHover(item.index)}
                       onMouseLeave={handleMenuLeave}
                       onClick={() => onScrollTo(item.target)}
-                      className={`w-full text-left py-4 px-4 transition-all duration-500 flex items-center justify-start border-b border-brand-gold/10 relative group cursor-pointer overflow-hidden rounded-xl ${
+                      className={`w-full text-left py-4 px-4 transition-all duration-500 flex items-center justify-start border relative group cursor-pointer overflow-hidden rounded-xl ${
                         isActive 
-                          ? 'bg-[#041627]/80 text-brand-gold pl-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.03)] border-transparent' 
-                          : 'text-slate-300 hover:bg-brand-gold/10 hover:border-transparent hover:text-white hover:pl-5'
+                          ? 'bg-brand-gold-light/15 text-brand-gold border-brand-gold/40 pl-5 shadow-lg' 
+                          : 'text-slate-300 border-transparent hover:bg-brand-gold-light/15 hover:border-brand-gold/40 hover:text-white hover:pl-5 bg-white/[0.01] shadow-sm'
                       }`}
                     >
                       {/* Interactive visual subtle glow backdrop */}
@@ -320,10 +338,10 @@ export default function Hero({ onScrollTo }: HeroProps) {
               <div className="pt-2 pb-2 px-2 flex justify-center bg-transparent mt-auto relative z-30">
                 <button
                   onClick={() => onScrollTo('consulta')}
-                  className="w-full max-w-[220px] px-4 py-3 bg-brand-gold-light hover:bg-white text-[#041627] text-[12px] md:text-[13px] font-bold uppercase flex items-center justify-center gap-2 transition-all duration-300 font-sans rounded-2xl shadow-xl hover:shadow-brand-gold-light/20 hover:scale-[1.03] active:scale-98 cursor-pointer group"
+                  className="w-full max-w-[220px] px-4 py-3 bg-brand-gold-light hover:bg-white text-[#0a2240] text-[12px] md:text-[13px] font-bold uppercase flex items-center justify-center gap-2 transition-all duration-300 font-sans rounded-2xl shadow-xl hover:shadow-brand-gold-light/20 hover:scale-[1.03] active:scale-98 cursor-pointer group"
                 >
                   <div className="transition-transform duration-300 ease-out group-hover:scale-110 group-hover:-translate-y-0.5">
-                    <Calendar className="w-4 h-4 text-[#041627] stroke-[2.5]" />
+                    <Calendar className="w-4 h-4 text-[#0a2240] stroke-[2.5]" />
                   </div>
                   <span className="whitespace-nowrap">Agendar Consulta</span>
                 </button>

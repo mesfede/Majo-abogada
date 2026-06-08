@@ -6,7 +6,7 @@ import {
   ChevronRight, RefreshCw, MessageSquare, FileText, CheckCircle2, Loader2, ArrowLeft
 } from 'lucide-react';
 import { ConsultationRequest, CaseAnalysis } from '../types';
-import { db } from '../firebase';
+import { db, auth } from '../firebase';
 import { collection, getDocs, doc, updateDoc, deleteDoc, query, orderBy } from 'firebase/firestore';
 
 interface DashboardProps {
@@ -18,7 +18,9 @@ export default function Dashboard({ onBackToPublic }: DashboardProps) {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [activeRequest, setActiveRequest] = useState<ConsultationRequest | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [authError, setAuthError] = useState<string | null>(null);
+  const [authLoading, setAuthLoading] = useState(true);
+  const [firebaseUser, setFirebaseUser] = useState<any>(null);
+  const [cloudSyncError, setCloudSyncError] = useState<string | null>(null);
 
   // States for active actions inside detailed view
   const [lawyerNotes, setLawyerNotes] = useState('');
@@ -31,6 +33,15 @@ export default function Dashboard({ onBackToPublic }: DashboardProps) {
   // Filters
   const [filterType, setFilterType] = useState<string>('all');
   const [filterStatus, setFilterStatus] = useState<string>('all');
+
+  // Monitor Firebase Authentication asynchronously
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged((user) => {
+      setFirebaseUser(user);
+      setAuthLoading(false);
+    });
+    return () => unsubscribe();
+  }, []);
 
   // Load consultations from both Cloud Firestore and local Express API, merge and deduplicate
   const fetchRequests = async () => {
@@ -50,11 +61,13 @@ export default function Dashboard({ onBackToPublic }: DashboardProps) {
       querySnapshot.forEach((docSnap) => {
         firestoreRequests.push(docSnap.data() as ConsultationRequest);
       });
-      setAuthError(null);
+      setCloudSyncError(null);
     } catch (firestoreErr: any) {
       console.warn('Firestore fetch failed or timed out. Bypassing cloud dataset.', firestoreErr);
       if (firestoreErr?.code === 'permission-denied' || firestoreErr?.message?.toLowerCase().includes('permission')) {
-        setAuthError('Acceso denegado a Firestore. Es necesario iniciar sesión con Google (Cuenta Oficial) para ver los registros confidenciales.');
+        setCloudSyncError('Acceso denegado a Firestore. Inicie sesión con Google (Cuenta Oficial) para guardados en la nube.');
+      } else {
+        setCloudSyncError('No se pudo conectar a Firestore (La base de datos en la nube está en modo respaldo).');
       }
     }
 
@@ -100,8 +113,10 @@ export default function Dashboard({ onBackToPublic }: DashboardProps) {
   };
 
   useEffect(() => {
-    fetchRequests();
-  }, []);
+    if (!authLoading) {
+      fetchRequests();
+    }
+  }, [authLoading, firebaseUser]);
 
   // Sync selected item detail view
   useEffect(() => {
@@ -300,11 +315,21 @@ Estudio Jurídico Lizaso CABA / Prov. Bs. As.`;
               <Shield className="w-6 h-6" />
             </div>
             <div className="flex flex-col items-center sm:items-start">
-              <div className="flex flex-col sm:flex-row items-center gap-2 mb-1 sm:mb-0">
+              <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2 mb-1 sm:mb-0">
                 <h1 className="font-display text-2xl font-bold tracking-wider text-white">ESTUDIO LIZASO</h1>
                 <span className="bg-red-500/20 text-red-300 border border-red-500/30 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">
                   Área Protegida
                 </span>
+                {cloudSyncError ? (
+                  <span className="bg-amber-500/15 text-amber-300 border border-amber-500/20 text-[9px] font-bold px-2 py-0.5 rounded uppercase tracking-wider" title={cloudSyncError}>
+                    ⚠️ Respaldo Local (Sin Nube)
+                  </span>
+                ) : (
+                  <span className="bg-emerald-500/15 text-emerald-300 border border-emerald-500/20 text-[9px] font-bold px-2 py-0.5 rounded uppercase tracking-wider flex items-center gap-1">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                    Sincronizado Nube
+                  </span>
+                )}
               </div>
               <p className="font-sans text-xs text-slate-400">
                 Panel Administrativo para Gestión Judicial de Consultas Entrantes.
@@ -365,28 +390,15 @@ Estudio Jurídico Lizaso CABA / Prov. Bs. As.`;
         </div>
 
         {/* Dashboard workspace */}
-        {isLoading ? (
+        {authLoading ? (
+          <div className="flex-1 flex flex-col justify-center items-center py-24 gap-4">
+            <Loader2 className="w-10 h-10 animate-spin text-brand-gold" />
+            <p className="text-slate-400 text-sm">Validando credenciales de seguridad...</p>
+          </div>
+        ) : isLoading ? (
           <div className="flex-1 flex flex-col justify-center items-center py-24 gap-4">
             <Loader2 className="w-10 h-10 animate-spin text-brand-gold" />
             <p className="text-slate-400 text-sm">Cargando base de consultas del tribunal virtual...</p>
-          </div>
-        ) : authError ? (
-          <div className="flex-1 border border-red-500/20 bg-red-500/5 rounded-lg p-16 text-center text-red-200 flex flex-col items-center justify-center gap-4">
-            <AlertTriangle className="w-12 h-12 text-red-500" />
-            <h3 className="font-sans text-lg font-bold text-red-400">Error de Autenticación</h3>
-            <p className="max-w-md text-xs leading-relaxed text-red-300">
-              {authError}
-            </p>
-            <button 
-              onClick={() => {
-                localStorage.removeItem('abogada_authenticated');
-                localStorage.removeItem('abogada_email');
-                window.location.reload();
-              }}
-              className="mt-4 bg-red-500/20 text-red-300 hover:bg-red-500/30 px-6 py-2 rounded-lg text-xs font-bold uppercase tracking-wider transition-colors border border-red-500/30"
-            >
-              Cerrar Sesión e Ingresar con Google
-            </button>
           </div>
         ) : filteredRequests.length === 0 ? (
           <div className="flex-1 border border-dashed border-white/10 rounded-lg p-16 text-center text-slate-400 flex flex-col items-center justify-center gap-4">

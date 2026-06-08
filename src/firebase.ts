@@ -16,7 +16,7 @@ const finalConfig = isEnvConfigured ? {
 } : firebaseConfig;
 
 const databaseId = isEnvConfigured ? 
-  (import.meta.env.VITE_FIREBASE_FIRESTORE_DATABASE_ID || '(default)') : 
+  (import.meta.env.VITE_FIREBASE_FIRESTORE_DATABASE_ID || (firebaseConfig as any).firestoreDatabaseId || '(default)') : 
   (firebaseConfig as any).firestoreDatabaseId || '(default)';
 
 const app = initializeApp(finalConfig);

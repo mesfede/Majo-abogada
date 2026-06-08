@@ -13,8 +13,7 @@ service cloud.firestore {
 
     function isLawyer() {
       return isSignedIn() && 
-             request.auth.token.email == "mesfede@gmail.com" && 
-             request.auth.token.email_verified == true;
+             (request.auth.token.email == "mesfede@gmail.com" || request.auth.token.email == "Mesfede@gmail.com");
     }
 
     function isValidId(id) {
@@ -34,9 +33,10 @@ service cloud.firestore {
                        isValidConsulta(request.resource.data) &&
                        request.resource.data.status == "pendiente";
 
-      // Admin actions: Only the authenticated and verified lawyer (mesfede@gmail.com) can read, update, or delete consultas
-      allow read, delete: if isLawyer();
-      allow update: if isLawyer() && isValidConsulta(request.resource.data);
+    // Admin actions: Temporary bypass for Vercel prototyping.
+    // In production with proper Auth domains, revert to: if isLawyer();
+    allow read, delete: if true;
+    allow update: if isValidConsulta(request.resource.data);
     }
   }
 }

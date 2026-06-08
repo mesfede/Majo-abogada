@@ -27,9 +27,9 @@ export default function Divorcios() {
   ];
 
   return (
-    <section className="relative py-24 bg-[#041627] overflow-hidden" id="divorcios">
+    <section className="relative py-24 bg-[#0a2240] overflow-hidden" id="divorcios">
       {/* Background Image with Ambient Parallax Depth Treatment */}
-      <div className="absolute inset-0 z-0 bg-[#041627] select-none overflow-hidden">
+      <div className="absolute inset-0 z-0 bg-[#0a2240] select-none overflow-hidden">
         <div 
             className="absolute inset-0 w-full h-full bg-cover bg-center bg-no-repeat bg-fixed grayscale contrast-[1.08] brightness-[0.80] opacity-90"
             style={{
@@ -37,8 +37,8 @@ export default function Divorcios() {
             }}
         />
         {/* Softened protection overlays to allow the slide images to shine with high detail */}
-        <div className="absolute inset-0 bg-gradient-to-t from-[#041627] via-[#041627]/20 to-[#020e1a]/60 pointer-events-none" />
-        <div className="absolute inset-0 bg-gradient-to-r from-[#041627]/50 via-transparent to-[#041627]/70 pointer-events-none" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#0a2240] via-[#0a2240]/20 to-[#041529]/60 pointer-events-none" />
+        <div className="absolute inset-0 bg-gradient-to-r from-[#0a2240]/50 via-transparent to-[#0a2240]/70 pointer-events-none" />
         
         {/* Subtle warm glow highlights matching the gold accent */}
         <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-brand-gold/15 rounded-full blur-[120px] mix-blend-overlay pointer-events-none" />

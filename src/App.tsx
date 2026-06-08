@@ -312,7 +312,7 @@ export default function App() {
                   type="button"
                   onClick={handleGoogleSignIn}
                   disabled={isVerifying || authSuccess}
-                  className="w-full flex items-center justify-center gap-3 bg-[#041627] hover:bg-slate-800 text-white font-sans text-xs font-bold uppercase tracking-wider py-4 px-4 rounded transition-all cursor-pointer shadow-md mb-5"
+                  className="w-full flex items-center justify-center gap-3 bg-[#0a2240] hover:bg-slate-800 text-white font-sans text-xs font-bold uppercase tracking-wider py-4 px-4 rounded transition-all cursor-pointer shadow-md mb-5"
                 >
                   <svg className="w-4.5 h-4.5" viewBox="0 0 24 24" fill="currentColor">
                     <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
@@ -363,7 +363,7 @@ export default function App() {
                 {/* Direct helper shortcut for rapid inspection */}
                 <div className="pt-1">
                   <p className="text-[10px] text-neutral-400 leading-normal text-justify leading-snug">
-                    <strong className="text-brand-gold">Seguridad titular:</strong> Al autenticarse, el portal confirmará que el correo coincida con el padrón habilitado (<span className="text-[#041627] select-all font-semibold">mesfede@gmail.com</span>).
+                    <strong className="text-brand-gold">Seguridad titular:</strong> Al autenticarse, el portal confirmará que el correo coincida con el padrón habilitado (<span className="text-[#0a2240] select-all font-semibold">mesfede@gmail.com</span>).
                   </p>
                 </div>
 
