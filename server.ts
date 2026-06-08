@@ -178,14 +178,33 @@ Consulta del cliente: "${message}"`;
 
 // Endpoint: Get all consultations (Admin dashboard)
 app.get("/api/consultas", async (req, res) => {
+  const localData = readConsultations() || [];
+  let mergeData = [...localData];
+
   if (firestoreDb) {
     try {
       const snapshot = await firestoreDb.collection("consultas").orderBy("createdAt", "desc").get();
-      const consultations: any[] = [];
+      const firestoreData: any[] = [];
       snapshot.forEach((doc) => {
-        consultations.push({ id: doc.id, ...doc.data() });
+        firestoreData.push({ id: doc.id, ...doc.data() });
       });
-      return res.json(consultations);
+
+      // Override local data with Firestore data if IDs match, and append new ones
+      const mergedMap = new Map();
+      mergeData.forEach((r) => {
+        if (r && r.id) mergedMap.set(r.id, r);
+      });
+      firestoreData.forEach((r) => {
+        if (r && r.id) mergedMap.set(r.id, r);
+      });
+
+      mergeData = Array.from(mergedMap.values()).sort((a: any, b: any) => {
+        const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+        const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+        return dateB - dateA;
+      });
+
+      return res.json(mergeData);
     } catch (firestoreErr: any) {
       if (firestoreErr && firestoreErr.code === 5) {
         console.warn("⚠️ Firestore database not found (5 NOT_FOUND), reverting to local backup file.");
@@ -195,8 +214,7 @@ app.get("/api/consultas", async (req, res) => {
     }
   }
 
-  const data = readConsultations();
-  res.json(data);
+  res.json(mergeData);
 });
 
 // Endpoint: Add new consultation request

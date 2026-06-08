@@ -164,7 +164,7 @@ export default function Hero({ onScrollTo }: HeroProps) {
         <div className="w-full px-4 md:px-8 container mx-auto max-w-[1240px] flex flex-col sm:flex-row justify-between items-center gap-4">
           
           {/* Brand logo positioned at the top left, aligned with the main container - increased size by 15% */}
-          <div className="flex items-center justify-start sm:justify-start select-none w-full sm:w-auto">
+          <div className="flex items-center justify-center sm:justify-start select-none w-full sm:w-auto">
             <img 
               src={logoImg1} 
               alt="Dra. María José Lizaso" 
