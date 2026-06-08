@@ -102,7 +102,7 @@ export default function App() {
       console.error("Google Auth error", err);
       setIsVerifying(false);
       setAuthError(
-        'Ocurrió un error al autenticar con Google. Por favor, intente nuevamente o utilice la verificación manual indicando su correo.'
+        'El inicio de sesión falló. Si estás en Vercel, recuerda que DEBES ingresar a tu Consola de Firebase -> Authentication -> Settings -> Authorized Domains y agregar la URL de tu Vercel (ej: tu-sitio.vercel.app).'
       );
     }
   };

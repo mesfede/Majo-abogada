@@ -65,9 +65,9 @@ export default function Dashboard({ onBackToPublic }: DashboardProps) {
     } catch (firestoreErr: any) {
       console.warn('Firestore fetch failed or timed out. Bypassing cloud dataset.', firestoreErr);
       if (firestoreErr?.code === 'permission-denied' || firestoreErr?.message?.toLowerCase().includes('permission')) {
-        setCloudSyncError('Acceso denegado a Firestore. Inicie sesión con Google (Cuenta Oficial) para guardados en la nube.');
+        setCloudSyncError('Alerta de Nube: Para que el inicio de sesión funcione en Vercel, debe agregar su dominio de Vercel (ej: sitio.vercel.app) a "Authorized domains" en la consola de Firebase Authentication.');
       } else {
-        setCloudSyncError('No se pudo conectar a Firestore (La base de datos en la nube está en modo respaldo).');
+        setCloudSyncError('No se pudo conectar a Firestore. Verifique variables de entorno en Vercel.');
       }
     }
 
