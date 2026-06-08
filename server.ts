@@ -27,15 +27,20 @@ if (fs.existsSync(configPath)) {
 }
 
 const firebaseProjectId = process.env.VITE_FIREBASE_PROJECT_ID || firebaseConfig.projectId;
+const databaseId = firebaseConfig.firestoreDatabaseId;
 let firestoreDb: admin.firestore.Firestore | null = null;
 
 if (firebaseProjectId) {
   try {
-    admin.initializeApp({
+    const app = admin.initializeApp({
       projectId: firebaseProjectId
     });
-    firestoreDb = admin.firestore();
-    console.log(`🤖 Firebase Admin successfully initialized for project: ${firebaseProjectId}`);
+    
+    // Import here or just use admin.firestore structure. But admin.firestore takes an app.
+    // Wait, let's use the explicit require to be safe if types are weird.
+    const { getFirestore } = require("firebase-admin/firestore");
+    firestoreDb = databaseId ? getFirestore(app, databaseId) : getFirestore(app);
+    console.log(`🤖 Firebase Admin successfully initialized for project: ${firebaseProjectId}, database: ${databaseId || "(default)"}`);
   } catch (adminErr) {
     console.error("❌ Failed to initialize Firebase Admin", adminErr);
   }
