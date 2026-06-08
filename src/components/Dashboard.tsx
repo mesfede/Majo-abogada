@@ -290,12 +290,12 @@ Estudio Jurídico Lizaso CABA / Prov. Bs. As.`;
         
         {/* Superior panel header */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 pb-6 border-b border-white/5">
-          <div className="flex items-center gap-3">
-            <div className="p-3 bg-brand-gold/10 text-brand-gold rounded border border-brand-gold/20">
+          <div className="flex flex-col sm:flex-row items-center sm:items-center text-center sm:text-left gap-3">
+            <div className="p-3 bg-brand-gold/10 text-brand-gold rounded border border-brand-gold/20 mx-auto sm:mx-0">
               <Shield className="w-6 h-6" />
             </div>
-            <div>
-              <div className="flex items-center gap-2">
+            <div className="flex flex-col items-center sm:items-start">
+              <div className="flex flex-col sm:flex-row items-center gap-2 mb-1 sm:mb-0">
                 <h1 className="font-display text-2xl font-bold tracking-wider text-white">ESTUDIO LIZASO</h1>
                 <span className="bg-red-500/20 text-red-300 border border-red-500/30 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">
                   Área Protegida
