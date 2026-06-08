@@ -187,7 +187,11 @@ app.get("/api/consultas", async (req, res) => {
       });
       return res.json(consultations);
     } catch (firestoreErr: any) {
-      console.error("Firestore Admin query failed, reverting to local backup file.", firestoreErr);
+      if (firestoreErr && firestoreErr.code === 5) {
+        console.warn("⚠️ Firestore database not found (5 NOT_FOUND), reverting to local backup file.");
+      } else {
+        console.error("Firestore Admin query failed, reverting to local backup file.", firestoreErr);
+      }
     }
   }
 
@@ -309,8 +313,12 @@ Consulta del cliente: "${message}"`;
     try {
       await firestoreDb.collection("consultas").doc(newId).set(newRequest);
       console.log(`✅ Consultation successfully saved to cloud Firestore: ${newId}`);
-    } catch (firestoreErr) {
-      console.error("❌ Failed to save consultation to cloud Firestore via Admin.", firestoreErr);
+    } catch (firestoreErr: any) {
+      if (firestoreErr && firestoreErr.code === 5) {
+        console.warn("⚠️ Firestore not found (NOT_FOUND). Could not save to cloud, falling back to local.");
+      } else {
+        console.error("❌ Failed to save consultation to cloud Firestore via Admin.", firestoreErr);
+      }
     }
   }
 
@@ -335,8 +343,12 @@ app.delete("/api/consultas/:id", async (req, res) => {
     try {
       await firestoreDb.collection("consultas").doc(id).delete();
       console.log(`✅ Consultation ${id} successfully deleted from cloud Firestore`);
-    } catch (firestoreErr) {
-      console.error("❌ Failed to delete consultation from cloud Firestore via Admin.", firestoreErr);
+    } catch (firestoreErr: any) {
+      if (firestoreErr && firestoreErr.code === 5) {
+        console.warn("⚠️ Firestore not found (NOT_FOUND). Could not delete from cloud.");
+      } else {
+        console.error("❌ Failed to delete consultation from cloud Firestore via Admin.", firestoreErr);
+      }
     }
   }
 
@@ -368,8 +380,12 @@ app.put("/api/consultas/:id", async (req, res) => {
     try {
       await firestoreDb.collection("consultas").doc(id).update(updateFields);
       console.log(`✅ Consultation ${id} successfully updated in cloud Firestore`);
-    } catch (firestoreErr) {
-      console.error("❌ Failed to update consultation in cloud Firestore via Admin.", firestoreErr);
+    } catch (firestoreErr: any) {
+      if (firestoreErr && firestoreErr.code === 5) {
+        console.warn("⚠️ Firestore not found (NOT_FOUND). Could not update cloud.");
+      } else {
+        console.error("❌ Failed to update consultation in cloud Firestore via Admin.", firestoreErr);
+      }
     }
   }
 

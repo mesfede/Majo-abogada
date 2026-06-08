@@ -4,6 +4,7 @@ import { ArrowRight, Calendar, Landmark, Users, Briefcase, User, MessageSquare }
 
 // Require the video and logo statically so Vite correctly bundles them and injects the proper asset URLs
 import bgVideo from '../assets/images/Abstract_details_architectural_t…_202606071428.mp4';
+import bgVideo2 from '../assets/images/Cinematic_black_white_video_scenes_202606071713.mp4';
 import logoImg1 from '../assets/images/Majo_logo_pink.png';
 
 interface HeroProps {
@@ -79,6 +80,33 @@ export default function Hero({ onScrollTo }: HeroProps) {
   const [isHovered, setIsHovered] = useState(false);
   const autoPlayTimer = useRef<NodeJS.Timeout | null>(null);
 
+  const [activeVideo, setActiveVideo] = useState(0);
+  const video1Ref = useRef<HTMLVideoElement>(null);
+  const video2Ref = useRef<HTMLVideoElement>(null);
+
+  useEffect(() => {
+    if (video1Ref.current) {
+      video1Ref.current.play().catch(console.error);
+    }
+  }, []);
+
+  const handleTimeUpdate = (e: React.SyntheticEvent<HTMLVideoElement, Event>, idx: number) => {
+    const video = e.currentTarget;
+    if (video.duration > 0 && video.duration - video.currentTime < 1.5) {
+      if (activeVideo === idx) {
+        const nextIndex = (idx + 1) % 2;
+        setActiveVideo(nextIndex);
+        if (nextIndex === 0 && video1Ref.current) {
+          video1Ref.current.currentTime = 0;
+          video1Ref.current.play().catch(console.error);
+        } else if (nextIndex === 1 && video2Ref.current) {
+          video2Ref.current.currentTime = 0;
+          video2Ref.current.play().catch(console.error);
+        }
+      }
+    }
+  };
+
   // Auto-play background transition cycle when user is not hovering options
   useEffect(() => {
     if (!isHovered) {
@@ -107,12 +135,20 @@ export default function Hero({ onScrollTo }: HeroProps) {
       <div className="absolute inset-0 z-0 bg-[#020e1a] select-none overflow-hidden">
         {/* Immersive background video replacing multiple image slides with custom LUT grading & blur */}
         <video
+          ref={video1Ref}
           src={bgVideo}
-          autoPlay
-          loop
           muted
           playsInline
-          className="w-full h-full object-cover object-center scale-100 grayscale contrast-[1.12] brightness-[0.48] blur-[2px] opacity-60 transition-all duration-1000"
+          onTimeUpdate={(e) => handleTimeUpdate(e, 0)}
+          className={`absolute inset-0 w-full h-full object-cover object-center scale-100 grayscale contrast-[1.12] brightness-[0.48] blur-[2px] transition-opacity duration-[1500ms] ${activeVideo === 0 ? 'opacity-60' : 'opacity-0'}`}
+        />
+        <video
+          ref={video2Ref}
+          src={bgVideo2}
+          muted
+          playsInline
+          onTimeUpdate={(e) => handleTimeUpdate(e, 1)}
+          className={`absolute inset-0 w-full h-full object-cover object-center scale-100 grayscale contrast-[1.12] brightness-[0.48] blur-[2px] transition-opacity duration-[1500ms] ${activeVideo === 1 ? 'opacity-60' : 'opacity-0'}`}
         />
         
         {/* Softened protection overlays to allow the slide images to shine with high detail */}
