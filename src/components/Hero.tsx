@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { ArrowRight, Calendar, Landmark, Users, Briefcase, User, MessageSquare } from 'lucide-react';
+import { ArrowRight, Calendar, Landmark, Users, Briefcase, User, MessageSquare, Calculator } from 'lucide-react';
 
 // Require the video and logo statically so Vite correctly bundles them and injects the proper asset URLs
 import bgVideo from '../assets/images/Abstract_details_architectural_t…_202606071428.mp4';
@@ -39,14 +39,14 @@ const MENU_ITEMS = [
   {
     index: 2,
     tag: "03",
-    label: "Especialidades",
-    titleLight: "Derecho Civil &",
-    titleBold: "Patrimonial",
-    desc: "Brindamos asesoramiento integral y redacción estratégica de contratos y convenios para asegurar la máxima solidez de su patrimonio. Trazamos esquemas preventivos de primer nivel que blindan su estabilidad financiera y garantizan su plena paz mental en el largo plazo.",
-    target: "especialidades",
-    icon: Briefcase,
-    tagline: "CIVIL & PATRIMONIAL",
-    buttonText: "Descubrir áreas"
+    label: "Previsibilidad",
+    titleLight: "Previsibilidad",
+    titleBold: "Legal",
+    desc: "Sabemos que dar el primer paso legal genera incertidumbre. Por eso, nos regimos estrictamente por las normativas vigentes, priorizando la claridad y la previsibilidad económica desde el primer día con opciones de pago.",
+    target: "calculadora",
+    icon: Calculator,
+    tagline: "TRANSPARENCIA TOTAL",
+    buttonText: "Ver referencias"
   },
   {
     index: 3,

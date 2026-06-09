@@ -2,8 +2,13 @@ import React, { useState, useEffect } from 'react';
 import Hero from './components/Hero';
 import Sucesiones from './components/Sucesiones';
 import Divorcios from './components/Divorcios';
-import Especialidades from './components/Especialidades';
 import Nosotros from './components/Nosotros';
+import CalculadoraHonorarios from './components/CalculadoraHonorarios';
+import Seguimiento from './components/Seguimiento';
+import Glosario from './components/Glosario';
+import QuickNav from './components/QuickNav';
+import AsistenteIA from './components/AsistenteIA';
+import LegalModals, { LegalDocType } from './components/LegalModals';
 import ConsultForm from './components/ConsultForm';
 import Dashboard from './components/Dashboard';
 import logoImg1 from './assets/images/Majo_logo_pink.png';
@@ -24,6 +29,7 @@ export default function App() {
   const [isVerifying, setIsVerifying] = useState(false);
   const [authError, setAuthError] = useState<string | null>(null);
   const [authSuccess, setAuthSuccess] = useState(false);
+  const [legalDoc, setLegalDoc] = useState<LegalDocType>(null);
 
   // Smooth scroll handler matches Navigation target targets
   const handleScrollTo = (id: string) => {
@@ -196,9 +202,17 @@ export default function App() {
               <hr className="border-t border-brand-gold/15" />
             </div>
 
-            <Especialidades />
+            <CalculadoraHonorarios />
             <Nosotros />
+            <Glosario />
+            <Seguimiento />
             <ConsultForm />
+            
+            {/* Navigación Rápida Flotante */}
+            <QuickNav onScrollTo={handleScrollTo} />
+
+            {/* Bot flotante */}
+            <AsistenteIA />
           </div>
         )}
       </main>
@@ -233,11 +247,10 @@ export default function App() {
           </div>
 
           {/* Legal references navigation list */}
-          <nav className="flex flex-wrap justify-center gap-6 md:gap-8 text-xs font-semibold uppercase tracking-wider text-slate-350">
-            <a href="#" className="hover:text-brand-gold-light transition-colors">Aviso Legal</a>
-            <a href="#" className="hover:text-brand-gold-light transition-colors">Política de Privacidad</a>
-            <a href="#" className="hover:text-brand-gold-light transition-colors">Términos de Servicio</a>
-            <a href="#consulta" className="hover:text-brand-gold-light transition-colors" onClick={(e) => { e.preventDefault(); handleScrollTo('consulta'); }}>Contacto</a>
+          <nav className="flex flex-wrap justify-center gap-6 md:gap-8 text-[10px] font-semibold uppercase tracking-wider text-slate-300">
+            <button onClick={() => setLegalDoc('aviso')} className="hover:text-brand-gold-light transition-colors whitespace-nowrap cursor-pointer">Aviso Legal</button>
+            <button onClick={() => setLegalDoc('privacidad')} className="hover:text-brand-gold-light transition-colors whitespace-nowrap cursor-pointer">Política de Privacidad</button>
+            <button onClick={() => setLegalDoc('terminos')} className="hover:text-brand-gold-light transition-colors whitespace-nowrap cursor-pointer">Términos de Servicio</button>
           </nav>
 
           {/* External action indicators */}
@@ -417,6 +430,8 @@ export default function App() {
         </div>
       )}
 
+      {/* Popups Legales */}
+      <LegalModals isOpen={legalDoc} onClose={() => setLegalDoc(null)} />
     </div>
   );
 }
