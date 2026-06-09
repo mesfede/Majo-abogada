@@ -1,19 +1,20 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    // Global safety net: default deny
+    // Seguridad por defecto: Denegar todo
     match /{document=**} {
       allow read, write: if false;
     }
 
-    // Helper functions
+    // Funciones de validación
     function isSignedIn() {
       return request.auth != null;
     }
 
     function isLawyer() {
       return isSignedIn() && 
-             (request.auth.token.email == "mesfede@gmail.com" || request.auth.token.email == "Mesfede@gmail.com");
+             (request.auth.token.email.lower() == "mesfede@gmail.com" || 
+              request.auth.token.email.lower() == "mjlizaso@gmail.com");
     }
 
     function isValidId(id) {
@@ -26,17 +27,15 @@ service cloud.firestore {
              consulta.message is string && consulta.message.size() <= 10000;
     }
 
-    // Consultations block
+    // Colección de consultas
     match /consultas/{consultaId} {
-      // Create is public so anyone can submit a legal query form
+      // Cualquiera puede enviar una consulta
       allow create: if isValidId(consultaId) && 
                        isValidConsulta(request.resource.data) &&
                        request.resource.data.status == "pendiente";
 
-    // Admin actions: Temporary bypass for Vercel prototyping.
-    // In production with proper Auth domains, revert to: if isLawyer();
-    allow read, delete: if true;
-    allow update: if isValidConsulta(request.resource.data);
+      // Solo los abogados pueden leer, actualizar y eliminar
+      allow read, update, delete: if isLawyer();
     }
   }
 }

@@ -64,11 +64,7 @@ export default function Dashboard({ onBackToPublic }: DashboardProps) {
       setCloudSyncError(null);
     } catch (firestoreErr: any) {
       console.warn('Firestore fetch failed or timed out. Bypassing cloud dataset.', firestoreErr);
-      if (firestoreErr?.code === 'permission-denied' || firestoreErr?.message?.toLowerCase().includes('permission')) {
-        setCloudSyncError('Alerta de Nube: Para que el inicio de sesión funcione en Vercel, debe agregar su dominio de Vercel (ej: sitio.vercel.app) a "Authorized domains" en la consola de Firebase Authentication.');
-      } else {
-        setCloudSyncError('No se pudo conectar a Firestore. Verifique variables de entorno en Vercel.');
-      }
+      setCloudSyncError(`Error Firestore: Faltan permisos de lectura. Por favor configure las Reglas (Rules) en su consola de Firebase.`);
     }
 
     // 2. Try to fetch from local Express server API fallback
@@ -321,8 +317,8 @@ Estudio Jurídico Lizaso CABA / Prov. Bs. As.`;
                   Área Protegida
                 </span>
                 {cloudSyncError ? (
-                  <span className="bg-amber-500/15 text-amber-300 border border-amber-500/20 text-[9px] font-bold px-2 py-0.5 rounded uppercase tracking-wider" title={cloudSyncError}>
-                    ⚠️ Respaldo Local (Sin Nube)
+                  <span className="bg-amber-500/15 text-amber-300 border border-amber-500/20 text-[9px] font-bold px-2 py-0.5 rounded uppercase tracking-wider max-w-lg truncate" title={cloudSyncError}>
+                    ⚠️ {cloudSyncError}
                   </span>
                 ) : (
                   <span className="bg-emerald-500/15 text-emerald-300 border border-emerald-500/20 text-[9px] font-bold px-2 py-0.5 rounded uppercase tracking-wider flex items-center gap-1">
