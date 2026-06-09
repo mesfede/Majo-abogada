@@ -5,7 +5,7 @@ import Divorcios from './components/Divorcios';
 import Nosotros from './components/Nosotros';
 import CalculadoraHonorarios from './components/CalculadoraHonorarios';
 import Seguimiento from './components/Seguimiento';
-import Glosario from './components/Glosario';
+import GlosarioModal from './components/Glosario';
 import QuickNav from './components/QuickNav';
 import AsistenteIA from './components/AsistenteIA';
 import LegalModals, { LegalDocType } from './components/LegalModals';
@@ -31,10 +31,16 @@ export default function App() {
   const [authSuccess, setAuthSuccess] = useState(false);
   const [legalDoc, setLegalDoc] = useState<LegalDocType>(null);
 
+  const [isGlosarioOpen, setIsGlosarioOpen] = useState(false);
+
   // Smooth scroll handler matches Navigation target targets
   const handleScrollTo = (id: string) => {
     if (id === 'top') {
       window.scrollTo({ top: 0, behavior: 'smooth' });
+      return;
+    }
+    if (id === 'glosario') {
+      setIsGlosarioOpen(true);
       return;
     }
     const element = document.getElementById(id);
@@ -204,7 +210,7 @@ export default function App() {
 
             <CalculadoraHonorarios />
             <Nosotros />
-            <Glosario />
+            <GlosarioModal isOpen={isGlosarioOpen} onClose={() => setIsGlosarioOpen(false)} />
             <Seguimiento />
             <ConsultForm />
             
@@ -247,10 +253,11 @@ export default function App() {
           </div>
 
           {/* Legal references navigation list */}
-          <nav className="flex flex-wrap justify-center gap-6 md:gap-8 text-[10px] font-semibold uppercase tracking-wider text-slate-300">
+          <nav className="flex flex-wrap justify-center gap-6 md:gap-8 text-xs font-semibold uppercase tracking-wider text-slate-300">
             <button onClick={() => setLegalDoc('aviso')} className="hover:text-brand-gold-light transition-colors whitespace-nowrap cursor-pointer">Aviso Legal</button>
             <button onClick={() => setLegalDoc('privacidad')} className="hover:text-brand-gold-light transition-colors whitespace-nowrap cursor-pointer">Política de Privacidad</button>
             <button onClick={() => setLegalDoc('terminos')} className="hover:text-brand-gold-light transition-colors whitespace-nowrap cursor-pointer">Términos de Servicio</button>
+            <button onClick={() => setIsGlosarioOpen(true)} className="hover:text-brand-gold-light transition-colors whitespace-nowrap cursor-pointer">Glosario Legal</button>
           </nav>
 
           {/* External action indicators */}

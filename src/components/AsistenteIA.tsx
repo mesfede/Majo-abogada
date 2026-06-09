@@ -49,7 +49,7 @@ export default function AsistenteIA() {
       <div className="fixed bottom-6 right-6 z-40">
         <button
           onClick={() => setIsOpen(!isOpen)}
-          className={`flex items-center justify-center p-4 rounded-full shadow-2xl transition-transform duration-300 ${isOpen ? 'scale-0 opacity-0' : 'scale-100 opacity-100'} bg-[#0a2240] text-white hover:bg-[#bd7d8a]`}
+          className={`flex items-center justify-center w-[56px] h-[56px] rounded-full shadow-2xl transition-transform duration-300 ${isOpen ? 'scale-0 opacity-0' : 'scale-100 opacity-100'} bg-[#0a2240] text-white hover:bg-[#bd7d8a]`}
           title="Abrir Asistente Virtual IA"
         >
           <MessageSquare className="w-6 h-6" />

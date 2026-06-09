@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { ArrowRight, Calendar, Landmark, Users, Briefcase, User, MessageSquare, Calculator } from 'lucide-react';
+import { ArrowRight, Calendar, Landmark, Users, Briefcase, User, MessageSquare, Calculator, Search, BookOpen } from 'lucide-react';
 
 // Require the video and logo statically so Vite correctly bundles them and injects the proper asset URLs
 import bgVideo from '../assets/images/Abstract_details_architectural_t…_202606071428.mp4';
@@ -39,6 +39,18 @@ const MENU_ITEMS = [
   {
     index: 2,
     tag: "03",
+    label: "Expediente",
+    titleLight: "Seguimiento",
+    titleBold: "Online",
+    desc: "Mantenemos absoluta transparencia. Si usted ya es cliente del estudio, puede hacer un seguimiento en tiempo real de los avances de su caso.",
+    target: "seguimiento",
+    icon: Search,
+    tagline: "MI EXPEDIENTE",
+    buttonText: "Buscar expediente"
+  },
+  {
+    index: 3,
+    tag: "04",
     label: "Previsibilidad",
     titleLight: "Previsibilidad",
     titleBold: "Legal",
@@ -49,8 +61,8 @@ const MENU_ITEMS = [
     buttonText: "Ver referencias"
   },
   {
-    index: 3,
-    tag: "04",
+    index: 4,
+    tag: "05",
     label: "Quién Soy",
     titleLight: "Dra. María José",
     titleBold: "Lizaso",
@@ -61,8 +73,8 @@ const MENU_ITEMS = [
     buttonText: "Mi trayectoria"
   },
   {
-    index: 4,
-    tag: "05",
+    index: 5,
+    tag: "06",
     label: "Contacto",
     titleLight: "Agendar",
     titleBold: "Consulta",
@@ -182,19 +194,22 @@ export default function Hero({ onScrollTo }: HeroProps) {
         <div className="w-full px-4 md:px-8 container mx-auto max-w-[1240px] flex flex-col sm:flex-row justify-between items-center gap-4">
           
           {/* Brand logo positioned at the top left, aligned with the main container - increased size by 15% */}
-          <div className="flex items-center justify-center sm:justify-start select-none w-full sm:w-auto">
+          <div className="flex items-center justify-center sm:justify-start gap-4 md:gap-6 select-none w-full sm:w-auto">
             <img 
               src={logoImg1} 
               alt="Dra. María José Lizaso" 
-              className="h-[46px] sm:h-[58px] md:h-[69px] w-auto object-contain drop-shadow-md hover:scale-[1.01] transition-all duration-300 pointer-events-auto"
+              className="h-[46px] sm:h-[58px] md:h-[69px] w-auto object-contain drop-shadow-md hover:scale-[1.01] transition-all duration-300 pointer-events-auto cursor-pointer"
               referrerPolicy="no-referrer"
+              onClick={() => onScrollTo('top')}
             />
           </div>
 
-          {/* Right matriculate registry detail for absolute architectural distinction */}
-          <div className="hidden sm:flex items-center gap-2.5 text-right opacity-70">
-            <span className="font-mono text-[9px] text-brand-gold-light font-bold tracking-[0.2em] uppercase">REG. MAT. T° VI F° 89</span>
-            <span className="w-1.5 h-1.5 rounded-full bg-brand-gold" />
+          {/* Right matriculate registry detail & Expediente link */}
+          <div className="hidden sm:flex items-center gap-6 text-right">
+            <div className="flex items-center gap-2.5 opacity-70">
+              <span className="font-mono text-[9px] text-brand-gold-light font-bold tracking-[0.2em] uppercase">REG. MAT. T° VI F° 89</span>
+              <span className="w-1.5 h-1.5 rounded-full bg-brand-gold" />
+            </div>
           </div>
 
         </div>

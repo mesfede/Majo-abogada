@@ -3,17 +3,20 @@ import { motion, AnimatePresence } from 'motion/react';
 import { 
   Shield, Mail, Phone, Calendar, Clipboard, Trash2, 
   Save, CheckCircle, Clock, Sparkles, AlertTriangle, 
-  ChevronRight, RefreshCw, MessageSquare, FileText, CheckCircle2, Loader2, ArrowLeft
+  ChevronRight, RefreshCw, MessageSquare, FileText, CheckCircle2, Loader2, ArrowLeft,
+  Users, Briefcase
 } from 'lucide-react';
 import { ConsultationRequest, CaseAnalysis } from '../types';
 import { db, auth } from '../firebase';
 import { collection, getDocs, doc, updateDoc, deleteDoc, query, orderBy } from 'firebase/firestore';
+import ExpedientesManager from './ExpedientesManager';
 
 interface DashboardProps {
   onBackToPublic: () => void;
 }
 
 export default function Dashboard({ onBackToPublic }: DashboardProps) {
+  const [activeTab, setActiveTab] = useState<'consultas' | 'expedientes'>('consultas');
   const [requests, setRequests] = useState<ConsultationRequest[]>([]);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [activeRequest, setActiveRequest] = useState<ConsultationRequest | null>(null);
@@ -250,28 +253,32 @@ Estudio Jurídico Lizaso CABA / Prov. Bs. As.`;
     if (!confirm('¿Confirma que desea eliminar este expediente de consulta del registro permanente?')) {
       return;
     }
+    
+    // Optimistic UI update
+    setRequests(prev => prev.filter(r => r.id !== id));
+    if (selectedId === id) {
+      setSelectedId(null);
+    }
+    
     try {
       // Try Cloud Firestore first
       const docRef = doc(db, 'consultas', id);
       await deleteDoc(docRef);
-      setRequests(prev => prev.filter(r => r.id !== id));
-      if (selectedId === id) {
-        setSelectedId(null);
-      }
     } catch (firestoreErr) {
       console.warn('Firestore delete failed, trying static server fallback...', firestoreErr);
       try {
         const res = await fetch(`/api/consultas/${id}`, {
           method: 'DELETE'
         });
-        if (res.ok) {
-          setRequests(prev => prev.filter(r => r.id !== id));
-          if (selectedId === id) {
-            setSelectedId(null);
-          }
+        if (!res.ok) {
+           alert('Ocurrió un error al eliminar la consulta en el servidor local. ' + res.statusText);
+           // Rollback if needed
+           fetchRequests();
         }
       } catch (err) {
         console.error('Error deleting request on server', err);
+        alert('Ocurrió un error general de red al intentar eliminar.');
+        fetchRequests();
       }
     }
   };
@@ -301,33 +308,33 @@ Estudio Jurídico Lizaso CABA / Prov. Bs. As.`;
   });
 
   return (
-    <div className="pt-24 min-h-screen bg-slate-900 text-slate-100 flex flex-col">
+    <div className="pt-24 min-h-screen bg-slate-50 text-slate-800 flex flex-col">
       <div className="flex-1 w-full max-w-[1400px] mx-auto px-6 md:px-12 py-8 flex flex-col gap-6">
         
         {/* Superior panel header */}
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 pb-6 border-b border-white/5">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 pb-6 border-b border-slate-200">
           <div className="flex flex-col sm:flex-row items-center sm:items-center text-center sm:text-left gap-3">
             <div className="p-3 bg-brand-gold/10 text-brand-gold rounded border border-brand-gold/20 mx-auto sm:mx-0">
               <Shield className="w-6 h-6" />
             </div>
             <div className="flex flex-col items-center sm:items-start">
               <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2 mb-1 sm:mb-0">
-                <h1 className="font-display text-2xl font-bold tracking-wider text-white">ESTUDIO LIZASO</h1>
-                <span className="bg-red-500/20 text-red-300 border border-red-500/30 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">
+                <h1 className="font-display text-2xl font-bold tracking-wider text-slate-900">ESTUDIO LIZASO</h1>
+                <span className="bg-red-500/20 text-red-700 border border-red-500/30 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">
                   Área Protegida
                 </span>
                 {cloudSyncError ? (
-                  <span className="bg-amber-500/15 text-amber-300 border border-amber-500/20 text-[9px] font-bold px-2 py-0.5 rounded uppercase tracking-wider max-w-lg truncate" title={cloudSyncError}>
+                  <span className="bg-amber-500/15 text-amber-700 border border-amber-500/20 text-[9px] font-bold px-2 py-0.5 rounded uppercase tracking-wider max-w-lg truncate" title={cloudSyncError}>
                     ⚠️ {cloudSyncError}
                   </span>
                 ) : (
-                  <span className="bg-emerald-500/15 text-emerald-300 border border-emerald-500/20 text-[9px] font-bold px-2 py-0.5 rounded uppercase tracking-wider flex items-center gap-1">
+                  <span className="bg-emerald-500/15 text-emerald-700 border border-emerald-500/30 text-[9px] font-bold px-2 py-0.5 rounded uppercase tracking-wider flex items-center gap-1">
                     <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
                     Sincronizado Nube
                   </span>
                 )}
               </div>
-              <p className="font-sans text-xs text-slate-400">
+              <p className="font-sans text-xs text-slate-500">
                 Panel Administrativo para Gestión Judicial de Consultas Entrantes.
               </p>
             </div>
@@ -336,7 +343,7 @@ Estudio Jurídico Lizaso CABA / Prov. Bs. As.`;
           <div className="flex gap-3">
             <button
               onClick={fetchRequests}
-              className="px-4 py-2 text-xs font-semibold bg-slate-800 text-slate-300 border border-slate-700 hover:bg-slate-700 hover:text-white transition-all flex items-center gap-2 cursor-pointer rounded-xs"
+              className="px-4 py-2 text-xs font-semibold bg-white text-slate-700 border border-slate-300 hover:bg-slate-100 hover:text-slate-900 transition-all flex items-center gap-2 cursor-pointer rounded-xs"
               title="Sincronizar novedades de la base de datos"
             >
               <RefreshCw className="w-3.5 h-3.5" />
@@ -352,64 +359,92 @@ Estudio Jurídico Lizaso CABA / Prov. Bs. As.`;
           </div>
         </div>
 
-        {/* Filters bar */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 bg-slate-800/50 p-4 border border-white/5 rounded">
-          <div>
-            <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">Especialidad</label>
-            <select 
-              value={filterType}
-              onChange={(e) => setFilterType(e.target.value)}
-              className="w-full bg-slate-800 outline-none border border-slate-700 rounded p-2 text-xs text-white"
-            >
-              <option value="all">Sucesiones, Divorcios y General (Todas)</option>
-              <option value="Sucesión">Sucesiones</option>
-              <option value="Divorcio">Divorcios</option>
-              <option value="Consulta General">Cons. General</option>
-            </select>
-          </div>
-          <div>
-            <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">Estado del Trámite</label>
-            <select 
-              value={filterStatus}
-              onChange={(e) => setFilterStatus(e.target.value)}
-              className="w-full bg-slate-800 outline-none border border-slate-700 rounded p-2 text-xs text-white"
-            >
-              <option value="all">Todos los Estados</option>
-              <option value="pendiente">Pendiente</option>
-              <option value="revisado">Revisado / En Estudio</option>
-              <option value="respondido">Respondido / Agendado</option>
-            </select>
-          </div>
-          <div className="md:col-span-2 flex items-end justify-end text-right text-xs text-slate-400 p-2">
-            Mostrando <strong>{filteredRequests.length}</strong> solicitudes de un total de <strong>{requests.length}</strong> registradas.
-          </div>
+        {/* Custom Tabs */}
+        <div className="flex flex-wrap gap-2 mb-2">
+          <button 
+            onClick={() => setActiveTab('consultas')}
+            className={`px-6 py-3 text-xs font-bold uppercase tracking-wider rounded transition-all flex items-center gap-2 border ${
+              activeTab === 'consultas' 
+                ? 'bg-white text-slate-900 border-slate-300' 
+                : 'bg-transparent text-slate-500 border-transparent hover:bg-slate-100 hover:text-slate-700'
+            }`}
+          >
+            <Mail className="w-4 h-4" />
+            Consultas Entrantes
+          </button>
+          <button 
+            onClick={() => setActiveTab('expedientes')}
+            className={`px-6 py-3 text-xs font-bold uppercase tracking-wider rounded transition-all flex items-center gap-2 border ${
+              activeTab === 'expedientes' 
+                ? 'bg-white text-slate-900 border-[#bd7d8a]/30' 
+                : 'bg-transparent text-slate-500 border-transparent hover:bg-slate-100 hover:text-slate-700'
+            }`}
+          >
+            <Briefcase className="w-4 h-4" />
+            Gestión de Expedientes
+          </button>
         </div>
 
-        {/* Dashboard workspace */}
-        {authLoading ? (
-          <div className="flex-1 flex flex-col justify-center items-center py-24 gap-4">
-            <Loader2 className="w-10 h-10 animate-spin text-brand-gold" />
-            <p className="text-slate-400 text-sm">Validando credenciales de seguridad...</p>
-          </div>
-        ) : isLoading ? (
-          <div className="flex-1 flex flex-col justify-center items-center py-24 gap-4">
-            <Loader2 className="w-10 h-10 animate-spin text-brand-gold" />
-            <p className="text-slate-400 text-sm">Cargando base de consultas del tribunal virtual...</p>
-          </div>
-        ) : filteredRequests.length === 0 ? (
-          <div className="flex-1 border border-dashed border-white/10 rounded-lg p-16 text-center text-slate-400 flex flex-col items-center justify-center gap-4">
-            <div className="text-slate-600 font-display text-4xl">🗃️</div>
-            <h3 className="font-sans text-lg font-bold text-white">No hay consultas registradas</h3>
-            <p className="max-w-md text-xs leading-relaxed">
-              No se han encontrado solicitudes de consulta que coincidan con los filtros activos. Envíe una solicitud desde el formulario público de la web para verla reflejada aquí de inmediato.
-            </p>
-          </div>
-        ) : (
-          <div className="flex-1 grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
-            
-            {/* LEFT COLUMN PANEL: Requests stack */}
-            <div className="lg:col-span-5 xl:col-span-4 border border-white/5 rounded bg-slate-800/20 max-h-[640px] overflow-y-auto flex flex-col">
-              <div className="p-3 border-b border-white/5 bg-white/2 flex justify-between items-center">
+        {activeTab === 'consultas' ? (
+          <>
+            {/* Filters bar */}
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 bg-slate-1000 p-4 border border-slate-200 rounded">
+              <div>
+                <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1.5">Especialidad</label>
+                <select 
+                  value={filterType}
+                  onChange={(e) => setFilterType(e.target.value)}
+                  className="w-full bg-white outline-none border border-slate-300 rounded p-2 text-xs text-slate-900"
+                >
+                  <option value="all">Sucesiones, Divorcios y General (Todas)</option>
+                  <option value="Sucesión">Sucesiones</option>
+                  <option value="Divorcio">Divorcios</option>
+                  <option value="Consulta General">Cons. General</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1.5">Estado del Trámite</label>
+                <select 
+                  value={filterStatus}
+                  onChange={(e) => setFilterStatus(e.target.value)}
+                  className="w-full bg-white outline-none border border-slate-300 rounded p-2 text-xs text-slate-900"
+                >
+                  <option value="all">Todos los Estados</option>
+                  <option value="pendiente">Pendiente</option>
+                  <option value="revisado">Revisado / En Estudio</option>
+                  <option value="respondido">Respondido / Agendado</option>
+                </select>
+              </div>
+              <div className="md:col-span-2 flex items-end justify-end text-right text-xs text-slate-500 p-2">
+                Mostrando <strong>{filteredRequests.length}</strong> solicitudes de un total de <strong>{requests.length}</strong> registradas.
+              </div>
+            </div>
+
+            {/* Dashboard workspace */}
+            {authLoading ? (
+              <div className="flex-1 flex flex-col justify-center items-center py-24 gap-4">
+                <Loader2 className="w-10 h-10 animate-spin text-brand-gold" />
+                <p className="text-slate-500 text-sm">Validando credenciales de seguridad...</p>
+              </div>
+            ) : isLoading ? (
+              <div className="flex-1 flex flex-col justify-center items-center py-24 gap-4">
+                <Loader2 className="w-10 h-10 animate-spin text-brand-gold" />
+                <p className="text-slate-500 text-sm">Cargando base de consultas del tribunal virtual...</p>
+              </div>
+            ) : filteredRequests.length === 0 ? (
+              <div className="flex-1 border border-dashed border-slate-300 rounded-lg p-16 text-center text-slate-500 flex flex-col items-center justify-center gap-4">
+                <div className="text-slate-600 font-display text-4xl">🗃️</div>
+                <h3 className="font-sans text-lg font-bold text-slate-900">No hay consultas registradas</h3>
+                <p className="max-w-md text-xs leading-relaxed">
+                  No se han encontrado solicitudes de consulta que coincidan con los filtros activos. Envíe una solicitud desde el formulario público de la web para verla reflejada aquí de inmediato.
+                </p>
+              </div>
+            ) : (
+              <div className="flex-1 grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
+                
+                {/* LEFT COLUMN PANEL: Requests stack */}
+            <div className="lg:col-span-5 xl:col-span-4 border border-slate-200 rounded bg-white/20 max-h-[640px] overflow-y-auto flex flex-col">
+              <div className="p-3 border-b border-slate-200 bg-white/2 flex justify-between items-center">
                 <span className="text-[10px] font-bold uppercase tracking-widest text-brand-gold-light">Bandeja de Entrada</span>
                 <span className="bg-brand-gold/20 text-brand-gold-light text-[9px] font-bold px-2 rounded-full py-0.5">ESTUDIO</span>
               </div>
@@ -421,11 +456,11 @@ Estudio Jurídico Lizaso CABA / Prov. Bs. As.`;
                       key={req.id}
                       onClick={() => setSelectedId(req.id)}
                       className={`p-4 transition-all hover:bg-white/4 cursor-pointer relative flex flex-col gap-2 ${
-                        selectedId === req.id ? 'bg-white/5 border-l-4 border-brand-gold' : 'border-l-4 border-transparent'
+                        selectedId === req.id ? 'bg-slate-100 border-l-4 border-brand-gold' : 'border-l-4 border-transparent'
                       }`}
                     >
                       <div className="flex justify-between items-start gap-2">
-                        <span className="text-xs font-bold text-white break-words max-w-[200px]">{req.fullName}</span>
+                        <span className="text-xs font-bold text-slate-900 break-words max-w-[200px]">{req.fullName}</span>
                         <span className="text-[10px] text-slate-500 whitespace-nowrap">
                           {new Date(req.createdAt).toLocaleDateString('es-AR')}
                         </span>
@@ -433,7 +468,7 @@ Estudio Jurídico Lizaso CABA / Prov. Bs. As.`;
                       
                       <div className="flex justify-between items-center gap-2">
                         <div className="flex gap-1.5 flex-wrap">
-                          <span className="text-[9px] font-bold bg-slate-800 text-slate-300 border border-slate-700 rounded px-1.5 py-0.5 uppercase">
+                          <span className="text-[9px] font-bold bg-white text-slate-700 border border-slate-300 rounded px-1.5 py-0.5 uppercase">
                             {req.caseType}
                           </span>
                           
@@ -441,10 +476,10 @@ Estudio Jurídico Lizaso CABA / Prov. Bs. As.`;
                           {reqAnalysis && (
                             <span className={`text-[9px] font-bold rounded px-1.5 py-0.5 uppercase flex items-center gap-0.5 ${
                               reqAnalysis.urgency === 'Alta' 
-                                ? 'bg-red-950/80 text-red-300 border border-red-500/20' 
+                                ? 'bg-red-950/80 text-red-700 border border-red-500/20' 
                                 : reqAnalysis.urgency === 'Media' 
-                                  ? 'bg-amber-950/80 text-amber-300 border border-amber-500/20' 
-                                  : 'bg-emerald-950/80 text-emerald-300 border border-emerald-500/20'
+                                  ? 'bg-amber-950/80 text-amber-700 border border-amber-500/20' 
+                                  : 'bg-emerald-950/80 text-emerald-700 border border-emerald-500/30'
                             }`}>
                               <AlertTriangle className="w-2.5 h-2.5" />
                               {reqAnalysis.urgency}
@@ -455,10 +490,10 @@ Estudio Jurídico Lizaso CABA / Prov. Bs. As.`;
                         {/* Status indicators */}
                         <span className={`text-[9px] font-semibold tracking-wider font-sans uppercase rounded px-1.5 py-0.5 ${
                           req.status === 'pendiente' 
-                            ? 'bg-slate-700/80 text-slate-200' 
+                            ? 'bg-slate-700/80 text-slate-800' 
                             : req.status === 'revisado' 
-                              ? 'bg-amber-800/40 text-amber-300 border border-amber-800/20' 
-                              : 'bg-emerald-800/40 text-emerald-300 border border-emerald-800/20'
+                              ? 'bg-amber-800/40 text-amber-700 border border-amber-800/20' 
+                              : 'bg-emerald-800/40 text-emerald-700 border border-emerald-800/20'
                         }`}>
                           {req.status}
                         </span>
@@ -475,7 +510,7 @@ Estudio Jurídico Lizaso CABA / Prov. Bs. As.`;
                 {activeRequest ? (
                   <motion.div 
                     key={activeRequest.id}
-                    className="flex-1 bg-slate-800/30 border border-white/5 rounded p-6 md:p-8 flex flex-col gap-6"
+                    className="flex-1 bg-white/30 border border-slate-200 rounded p-6 md:p-8 flex flex-col gap-6"
                     initial={{ opacity: 0, x: 20 }}
                     animate={{ opacity: 1, x: 0 }}
                     exit={{ opacity: 0, x: -20 }}
@@ -483,11 +518,11 @@ Estudio Jurídico Lizaso CABA / Prov. Bs. As.`;
                   >
                     
                     {/* Detail block Top Header */}
-                    <div className="flex justify-between items-start flex-wrap gap-4 pb-6 border-b border-white/5">
+                    <div className="flex justify-between items-start flex-wrap gap-4 pb-6 border-b border-slate-200">
                       <div className="space-y-1">
                         <span className="text-[10px] uppercase tracking-widest text-[#44474c] block">Expediente ID: {activeRequest.id}</span>
-                        <h2 className="font-display text-2xl font-bold text-white leading-tight">{activeRequest.fullName}</h2>
-                        <div className="flex gap-4 flex-wrap text-xs text-slate-400 pt-1">
+                        <h2 className="font-display text-2xl font-bold text-slate-900 leading-tight">{activeRequest.fullName}</h2>
+                        <div className="flex gap-4 flex-wrap text-xs text-slate-500 pt-1">
                           <a href={`mailto:${activeRequest.email}`} className="flex items-center gap-1.5 hover:text-brand-gold transition-colors">
                             <Mail className="w-3.5 h-3.5" />
                             <span>{activeRequest.email}</span>
@@ -509,8 +544,8 @@ Estudio Jurídico Lizaso CABA / Prov. Bs. As.`;
 
                       {/* Expediente state action buttons */}
                       <div className="flex flex-col gap-2">
-                        <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest text-right">Estado del Expediente</span>
-                        <div className="flex bg-slate-900 p-1.5 rounded border border-white/5 gap-1">
+                        <span className="text-[9px] font-bold text-slate-500 uppercase tracking-widest text-right">Estado del Expediente</span>
+                        <div className="flex bg-slate-50 p-1.5 rounded border border-slate-200 gap-1">
                           {(['pendiente', 'revisado', 'respondido'] as const).map((st) => (
                             <button
                               key={st}
@@ -518,7 +553,7 @@ Estudio Jurídico Lizaso CABA / Prov. Bs. As.`;
                               className={`text-[10px] font-bold uppercase tracking-wider py-1 px-3 rounded-xs cursor-pointer transition-all ${
                                 activeRequest.status === st
                                   ? 'bg-brand-gold text-brand-primary'
-                                  : 'text-slate-400 hover:text-white hover:bg-white/4'
+                                  : 'text-slate-500 hover:text-slate-900 hover:bg-white/4'
                               }`}
                             >
                               {st}
@@ -530,11 +565,11 @@ Estudio Jurídico Lizaso CABA / Prov. Bs. As.`;
 
                     {/* Original case narrative */}
                     <div className="space-y-2">
-                      <span className="font-sans text-[11px] font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
+                      <span className="font-sans text-[11px] font-bold uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
                         <FileText className="w-4 h-4 text-brand-gold" />
                         Relato Original del Cliente:
                       </span>
-                      <div className="p-5 bg-slate-950/40 rounded border border-white/5 font-sans text-sm text-slate-350 leading-relaxed max-h-[160px] overflow-y-auto whitespace-pre-wrap">
+                      <div className="p-5 bg-slate-100/40 rounded border border-slate-200 font-sans text-sm text-slate-600 leading-relaxed max-h-[160px] overflow-y-auto whitespace-pre-wrap">
                         {activeRequest.message}
                       </div>
                     </div>
@@ -551,10 +586,10 @@ Estudio Jurídico Lizaso CABA / Prov. Bs. As.`;
                               Análisis de Admisión Automático Gemini 3.5-Flash
                             </span>
                             <div className="flex gap-2">
-                              <span className="bg-slate-900 border border-slate-700 px-2 py-0.5 rounded text-[10px] uppercase font-bold tracking-widest text-slate-300">
+                              <span className="bg-slate-50 border border-slate-300 px-2 py-0.5 rounded text-[10px] uppercase font-bold tracking-widest text-slate-700">
                                 Clasificación: {analysisData.category}
                               </span>
-                              <span className={`px-2 py-0.5 rounded text-[10px] uppercase font-bold tracking-widest text-white ${
+                              <span className={`px-2 py-0.5 rounded text-[10px] uppercase font-bold tracking-widest text-slate-900 ${
                                 analysisData.urgency === 'Alta' ? 'bg-red-950/70 text-red-200 border border-red-800/30' : analysisData.urgency === 'Media' ? 'bg-amber-950/70 text-amber-200 border border-amber-800/20' : 'bg-emerald-950/70 text-emerald-200 border border-emerald-800/20'
                               }`}>
                                 Urgencia: {analysisData.urgency}
@@ -562,14 +597,14 @@ Estudio Jurídico Lizaso CABA / Prov. Bs. As.`;
                             </div>
                           </div>
 
-                          <p className="font-sans text-xs text-slate-300 leading-relaxed italic">
+                          <p className="font-sans text-xs text-slate-700 leading-relaxed italic">
                             "{analysisData.summary}"
                           </p>
 
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
                             <div className="space-y-1">
                               <span className="text-[10px] font-bold text-brand-gold-light uppercase tracking-wider block">Puntos Críticos Detectados:</span>
-                              <ul className="list-disc pl-4 text-xs text-slate-400 space-y-1">
+                              <ul className="list-disc pl-4 text-xs text-slate-500 space-y-1">
                                 {analysisData.keyPoints.map((pt, k) => (
                                   <li key={k}>{pt}</li>
                                 ))}
@@ -578,7 +613,7 @@ Estudio Jurídico Lizaso CABA / Prov. Bs. As.`;
                             
                             <div className="space-y-1">
                               <span className="text-[10px] font-bold text-brand-gold-light uppercase tracking-wider block">Documentos & Pasos Sugeridos:</span>
-                              <ul className="list-disc pl-4 text-xs text-slate-400 space-y-1">
+                              <ul className="list-disc pl-4 text-xs text-slate-500 space-y-1">
                                 {analysisData.recommendedSteps.map((st, k) => (
                                   <li key={k}>{st}</li>
                                 ))}
@@ -594,7 +629,7 @@ Estudio Jurídico Lizaso CABA / Prov. Bs. As.`;
                       
                       {/* private lawyer comments */}
                       <div className="space-y-3">
-                        <span className="font-sans text-[11px] font-semibold uppercase tracking-wider text-slate-400 block">
+                        <span className="font-sans text-[11px] font-semibold uppercase tracking-wider text-slate-500 block">
                           Comentarios / Notas Privadas de la Abogada:
                         </span>
                         <textarea
@@ -602,18 +637,18 @@ Estudio Jurídico Lizaso CABA / Prov. Bs. As.`;
                           value={lawyerNotes}
                           onChange={(e) => setLawyerNotes(e.target.value)}
                           placeholder="Anote impresiones, juzgado de radicación, plazos críticos, o recordatorios de esta causa..."
-                          className="w-full bg-slate-900 border border-white/5 focus:border-brand-gold outline-none p-4 text-xs text-slate-200 leading-relaxed rounded resize-none"
+                          className="w-full bg-slate-50 border border-slate-200 focus:border-brand-gold outline-none p-4 text-xs text-slate-800 leading-relaxed rounded resize-none"
                         />
                         <div className="flex items-center justify-between gap-2 mt-1">
                           {notesSavedFeedback ? (
-                            <span className="text-[10px] font-medium text-emerald-400 block animate-pulse">
+                            <span className="text-[10px] font-medium text-emerald-600 block animate-pulse">
                               {notesSavedFeedback}
                             </span>
                           ) : <div />}
                           <button
                             onClick={handleSaveNotes}
                             disabled={isSavingNotes}
-                            className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 font-bold uppercase text-[10px] tracking-widest flex items-center gap-1.5 cursor-pointer transition-all"
+                            className="px-4 py-2 bg-white hover:bg-slate-100 text-slate-800 border border-slate-300 font-bold uppercase text-[10px] tracking-widest flex items-center gap-1.5 cursor-pointer transition-all"
                           >
                             <Save className="w-3.5 h-3.5" />
                             <span>{isSavingNotes ? 'Guardando...' : 'Guardar Notas'}</span>
@@ -623,12 +658,12 @@ Estudio Jurídico Lizaso CABA / Prov. Bs. As.`;
 
                       {/* automated drafts */}
                       <div className="space-y-3">
-                        <span className="font-sans text-[11px] font-semibold uppercase tracking-wider text-slate-400 flex items-center gap-1">
+                        <span className="font-sans text-[11px] font-semibold uppercase tracking-wider text-slate-500 flex items-center gap-1">
                           Generador de Propuestas (Drafts):
                         </span>
                         
-                        <div className="bg-slate-900/60 border border-white/5 rounded p-4 flex flex-col gap-3 min-h-[140px] justify-between">
-                          <p className="text-slate-400 text-xs leading-relaxed">
+                        <div className="bg-slate-50/60 border border-slate-200 rounded p-4 flex flex-col gap-3 min-h-[140px] justify-between">
+                          <p className="text-slate-500 text-xs leading-relaxed">
                             Ahorre tiempo redactando. El software redacta una respuesta por mail adaptada a la causa de forma empática usando IA.
                           </p>
                           
@@ -638,7 +673,7 @@ Estudio Jurídico Lizaso CABA / Prov. Bs. As.`;
                                 readOnly
                                 rows={4}
                                 value={generatedEmail}
-                                className="w-full bg-slate-950 p-2.5 font-sans text-[11px] text-slate-300 leading-relaxed rounded border border-white/5 outline-none resize-none"
+                                className="w-full bg-slate-100 p-2.5 font-sans text-[11px] text-slate-700 leading-relaxed rounded border border-slate-200 outline-none resize-none"
                               />
                               <div className="flex justify-between items-center">
                                 <button
@@ -681,7 +716,7 @@ Estudio Jurídico Lizaso CABA / Prov. Bs. As.`;
                     </div>
 
                     {/* Dangerous section */}
-                    <div className="pt-4 border-t border-white/5 flex justify-between items-center flex-wrap gap-2">
+                    <div className="pt-4 border-t border-slate-200 flex justify-between items-center flex-wrap gap-2">
                       <p className="text-[11px] text-slate-500">
                         Administración permanente del expediente de admisión. Asegúrese de guardar notas antes de salir.
                       </p>
@@ -697,9 +732,9 @@ Estudio Jurídico Lizaso CABA / Prov. Bs. As.`;
 
                   </motion.div>
                 ) : (
-                  <div className="flex-grow border border-dashed border-white/5 rounded-lg p-16 text-center text-slate-500 flex flex-col justify-center items-center gap-3">
+                  <div className="flex-grow border border-dashed border-slate-200 rounded-lg p-16 text-center text-slate-500 flex flex-col justify-center items-center gap-3">
                     <CheckCircle2 className="w-12 h-12 text-slate-700" />
-                    <h3 className="text-white font-semibold">Ningún Expediente Seleccionado</h3>
+                    <h3 className="text-slate-900 font-semibold">Ningún Expediente Seleccionado</h3>
                     <p className="text-xs max-w-sm">
                       Por favor, seleccione una solicitud de consulta de la bandeja izquierda para ver detalles completos, notas de seguimiento y redactor de drafts asistidos.
                     </p>
@@ -709,6 +744,10 @@ Estudio Jurídico Lizaso CABA / Prov. Bs. As.`;
             </div>
 
           </div>
+        )}
+        </>
+        ) : (
+          <ExpedientesManager />
         )}
 
       </div>

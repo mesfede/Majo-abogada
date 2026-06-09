@@ -1,0 +1,52 @@
+[
+  {
+    "idBusqueda": "12345678",
+    "tituloBase": "Expediente de prueba 1",
+    "juzgado": "Juzgado Civil y Comercial N° 5",
+    "pasos": [
+      {
+        "titulo": "Radicación en Juzgado Civil",
+        "descripcion": "Expte N° 12345/2026 radicado.",
+        "fecha": "24 Mayo 2026",
+        "estado": "completado"
+      },
+      {
+        "titulo": "Publicación de Edictos",
+        "descripcion": "Cumplimiento de la publicación en Boletín Oficial finalizada.",
+        "fecha": "03 Junio 2026",
+        "estado": "completado"
+      },
+      {
+        "titulo": "Aguardando Declaratoria",
+        "descripcion": "El expediente se encuentra a despacho para dictar resolución judicial (Declaratoria de Herederos).",
+        "fecha": "Estado Actual",
+        "estado": "pendiente"
+      }
+    ]
+  },
+  {
+    "idBusqueda": "EXP-2026",
+    "tituloBase": "Sucesión Ab intestato",
+    "juzgado": "Juzgado Civil N° 2",
+    "pasos": [
+      {
+        "titulo": "Inicio de Demanda",
+        "descripcion": "Presentación inicial realizada y sorteo de juzgado completado.",
+        "fecha": "10 Enero 2026",
+        "estado": "completado"
+      },
+      {
+        "titulo": "Oficios diligenciados",
+        "descripcion": "Se han contestado los oficios al Registro de Juicios Universales.",
+        "fecha": "15 Febrero 2026",
+        "estado": "completado"
+      },
+      {
+        "titulo": "Inscripción en Registro",
+        "descripcion": "Aguardando despacho para la inscripción formal de los oficios y prosecución del trámite.",
+        "fecha": "Estado Actual",
+        "estado": "pendiente"
+      }
+    ]
+  }
+]

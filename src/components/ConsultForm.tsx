@@ -149,7 +149,7 @@ export default function ConsultForm() {
         </span>
       </div>
 
-      <div className="max-w-[680px] mx-auto px-6 relative z-10">
+      <div className="max-w-[960px] mx-auto px-6 relative z-10">
         
         <motion.div 
           initial={{ opacity: 0, y: 30 }}
