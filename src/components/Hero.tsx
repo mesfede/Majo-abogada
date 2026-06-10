@@ -317,7 +317,7 @@ export default function Hero({ onScrollTo }: HeroProps) {
                       onMouseEnter={() => handleMenuHover(item.index)}
                       onMouseLeave={handleMenuLeave}
                       onClick={() => onScrollTo(item.target)}
-                      className={`w-full text-left py-1.5 md:py-2 px-2.5 transition-all duration-500 flex items-center justify-start border relative group cursor-pointer overflow-hidden rounded-xl ${
+                      className={`w-full text-left py-2.5 md:py-3 px-2.5 transition-all duration-500 flex items-center justify-start border relative group cursor-pointer overflow-hidden rounded-xl ${
                         isActive 
                           ? 'bg-brand-gold-light/15 text-brand-gold border-brand-gold/40 pl-3 shadow-lg' 
                           : 'text-slate-300 border-transparent hover:bg-brand-gold-light/15 hover:border-brand-gold/40 hover:text-white hover:pl-3 bg-white/[0.01] shadow-sm'
