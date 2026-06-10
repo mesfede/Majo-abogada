@@ -190,7 +190,7 @@ export default function Hero({ onScrollTo }: HeroProps) {
       </div>
 
       {/* ================= TOP AREA: BRAND BAR HOUSING LOGO (PISANDO EL SLIDE CON CORTE DE TRANSPARENCIA CASUAL Y DIFUMINADO) ================= */}
-      <div className="w-full bg-gradient-to-b from-white/[0.14] via-white/[0.03] to-transparent py-5 md:py-7 relative z-25 select-none transition-all duration-300">
+      <div className="w-full bg-gradient-to-b from-white/[0.14] via-white/[0.03] to-transparent pt-8 pb-4 md:pt-10 md:pb-6 relative z-25 select-none transition-all duration-300">
         <div className="w-full px-4 md:px-8 container mx-auto max-w-[1240px] flex flex-col sm:flex-row justify-between items-center gap-4">
           
           {/* Brand logo positioned at the top left, aligned with the main container - increased size by 15% */}
