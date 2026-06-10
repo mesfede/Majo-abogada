@@ -253,11 +253,11 @@ export default function App() {
           </div>
 
           {/* Legal references navigation list */}
-          <nav className="flex flex-wrap justify-center gap-6 md:gap-8 text-xs font-semibold uppercase tracking-wider text-slate-300">
-            <button onClick={() => setLegalDoc('aviso')} className="hover:text-brand-gold-light transition-colors whitespace-nowrap cursor-pointer">Aviso Legal</button>
-            <button onClick={() => setLegalDoc('privacidad')} className="hover:text-brand-gold-light transition-colors whitespace-nowrap cursor-pointer">Política de Privacidad</button>
-            <button onClick={() => setLegalDoc('terminos')} className="hover:text-brand-gold-light transition-colors whitespace-nowrap cursor-pointer">Términos de Servicio</button>
-            <button onClick={() => setIsGlosarioOpen(true)} className="hover:text-brand-gold-light transition-colors whitespace-nowrap cursor-pointer">Glosario Legal</button>
+          <nav className="flex flex-wrap justify-center gap-6 md:gap-10 text-sm font-semibold uppercase tracking-wider text-slate-300">
+            <button onClick={() => setLegalDoc('aviso')} className="hover:text-brand-gold-light transition-colors whitespace-nowrap cursor-pointer hover:-translate-y-0.5 transform duration-300">Aviso Legal</button>
+            <button onClick={() => setLegalDoc('privacidad')} className="hover:text-brand-gold-light transition-colors whitespace-nowrap cursor-pointer hover:-translate-y-0.5 transform duration-300">Política de Privacidad</button>
+            <button onClick={() => setLegalDoc('terminos')} className="hover:text-brand-gold-light transition-colors whitespace-nowrap cursor-pointer hover:-translate-y-0.5 transform duration-300">Términos de Servicio</button>
+            <button onClick={() => setIsGlosarioOpen(true)} className="hover:text-brand-gold-light transition-colors whitespace-nowrap cursor-pointer hover:-translate-y-0.5 transform duration-300">Glosario Legal</button>
           </nav>
 
           {/* External action indicators */}

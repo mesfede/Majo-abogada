@@ -190,7 +190,7 @@ export default function Hero({ onScrollTo }: HeroProps) {
       </div>
 
       {/* ================= TOP AREA: BRAND BAR HOUSING LOGO (PISANDO EL SLIDE CON CORTE DE TRANSPARENCIA CASUAL Y DIFUMINADO) ================= */}
-      <div className="w-full bg-gradient-to-b from-white/[0.14] via-white/[0.03] to-transparent py-9 md:py-12 relative z-25 select-none transition-all duration-300">
+      <div className="w-full bg-gradient-to-b from-white/[0.14] via-white/[0.03] to-transparent py-5 md:py-7 relative z-25 select-none transition-all duration-300">
         <div className="w-full px-4 md:px-8 container mx-auto max-w-[1240px] flex flex-col sm:flex-row justify-between items-center gap-4">
           
           {/* Brand logo positioned at the top left, aligned with the main container - increased size by 15% */}
@@ -216,7 +216,7 @@ export default function Hero({ onScrollTo }: HeroProps) {
       </div>
 
       {/* ================= MIDDLE WORKSPACE CORE: BALANCED SLIDE-AND-MENU UNIFIED BLOCK ================= */}
-      <div className="flex-grow flex items-center justify-center py-4 w-full relative z-20">
+      <div className="flex-grow flex items-start justify-center pt-2 md:pt-8 pb-4 w-full relative z-20">
         <div className="w-full px-4 md:px-8 container mx-auto max-w-[1240px]">
           
           {/* THE UNIFIED BLOCK: Completely borderless and integrated into the full layout width */}
@@ -304,10 +304,10 @@ export default function Hero({ onScrollTo }: HeroProps) {
             </div>
 
             {/* RIGHT AREA: CLEAN MENU SYSTEM WITH SLIGHTLY DIFFERENT TRANSPARENCY (~25% width) */}
-            <div className="w-full lg:w-4/12 lg:max-w-[300px] xl:max-w-[320px] lg:ml-auto flex flex-col justify-start bg-[#020d17]/15 relative z-10 py-5 px-3 lg:px-4 rounded-2xl border border-white/[0.04]">
+            <div className="w-full lg:w-4/12 lg:max-w-[250px] xl:max-w-[270px] lg:ml-auto flex flex-col justify-start bg-[#020d17]/15 relative z-10 py-3.5 px-2.5 rounded-2xl border border-white/[0.04]">
               
               {/* Stack of vertical responsive navigation buttons directly in card flow */}
-              <div className="flex flex-col flex-grow justify-center pb-4">
+              <div className="flex flex-col flex-grow justify-center pb-2">
                 {MENU_ITEMS.map((item, idx) => {
                   const isActive = index === idx;
                   const Icon = item.icon;
@@ -317,10 +317,10 @@ export default function Hero({ onScrollTo }: HeroProps) {
                       onMouseEnter={() => handleMenuHover(item.index)}
                       onMouseLeave={handleMenuLeave}
                       onClick={() => onScrollTo(item.target)}
-                      className={`w-full text-left py-4 px-4 transition-all duration-500 flex items-center justify-start border relative group cursor-pointer overflow-hidden rounded-xl ${
+                      className={`w-full text-left py-1.5 md:py-2 px-2.5 transition-all duration-500 flex items-center justify-start border relative group cursor-pointer overflow-hidden rounded-xl ${
                         isActive 
-                          ? 'bg-brand-gold-light/15 text-brand-gold border-brand-gold/40 pl-5 shadow-lg' 
-                          : 'text-slate-300 border-transparent hover:bg-brand-gold-light/15 hover:border-brand-gold/40 hover:text-white hover:pl-5 bg-white/[0.01] shadow-sm'
+                          ? 'bg-brand-gold-light/15 text-brand-gold border-brand-gold/40 pl-3 shadow-lg' 
+                          : 'text-slate-300 border-transparent hover:bg-brand-gold-light/15 hover:border-brand-gold/40 hover:text-white hover:pl-3 bg-white/[0.01] shadow-sm'
                       }`}
                     >
                       {/* Interactive visual subtle glow backdrop */}
@@ -331,14 +331,14 @@ export default function Hero({ onScrollTo }: HeroProps) {
                       <div className="flex items-center gap-3.5">
                         {/* More prominent left icon representing the section instead of numbers */}
                         <div className={`p-1 transition-all duration-300 flex-shrink-0 ${isActive ? 'text-brand-gold-light scale-110' : 'text-slate-500 group-hover:text-brand-gold-light'}`}>
-                          <Icon className="w-5 h-5 stroke-[1.5]" />
+                          <Icon className="w-[18px] h-[18px] stroke-[1.5]" />
                         </div>
 
                         <div className="flex flex-col min-w-0 flex-1">
-                          <span className={`font-display text-[15.5px] sm:text-[16px] font-semibold uppercase tracking-[0.12em] ${isActive ? 'text-white' : 'text-slate-200 group-hover:text-white'}`}>
+                          <span className={`font-display text-[13px] sm:text-[13.5px] font-semibold uppercase tracking-[0.12em] ${isActive ? 'text-white' : 'text-slate-200 group-hover:text-white'}`}>
                             {item.label}
                           </span>
-                          <span className="font-sans text-[12px] sm:text-[12.5px] text-slate-400 mt-0.5 truncate group-hover:text-slate-300">
+                          <span className="font-sans text-[10px] sm:text-[10.5px] text-slate-400 mt-0.5 truncate group-hover:text-slate-300">
                             {item.titleLight} {item.titleBold}
                           </span>
                         </div>
@@ -350,13 +350,13 @@ export default function Hero({ onScrollTo }: HeroProps) {
               </div>
 
               {/* Prominent booking action button */}
-              <div className="pt-2 pb-2 px-2 flex justify-center bg-transparent mt-auto relative z-30">
+              <div className="pt-1.5 pb-1 px-1 flex justify-center bg-transparent mt-auto relative z-30">
                 <button
                   onClick={() => onScrollTo('consulta')}
-                  className="w-full max-w-[220px] px-4 py-3 bg-brand-gold-light hover:bg-white text-[#0a2240] text-[12px] md:text-[13px] font-bold uppercase flex items-center justify-center gap-2 transition-all duration-300 font-sans rounded-2xl shadow-xl hover:shadow-brand-gold-light/20 hover:scale-[1.03] active:scale-98 cursor-pointer group"
+                  className="w-full max-w-[200px] px-4 py-2.5 bg-brand-gold-light hover:bg-white text-[#0a2240] text-[11px] md:text-[12px] font-bold uppercase flex items-center justify-center gap-2 transition-all duration-300 font-sans rounded-2xl shadow-xl hover:shadow-brand-gold-light/20 hover:scale-[1.03] active:scale-98 cursor-pointer group"
                 >
                   <div className="transition-transform duration-300 ease-out group-hover:scale-110 group-hover:-translate-y-0.5">
-                    <Calendar className="w-4 h-4 text-[#0a2240] stroke-[2.5]" />
+                    <Calendar className="w-3.5 h-3.5 text-[#0a2240] stroke-[2.5]" />
                   </div>
                   <span className="whitespace-nowrap">Agendar Consulta</span>
                 </button>
