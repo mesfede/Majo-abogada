@@ -5,7 +5,7 @@ import { ArrowRight, Calendar, Landmark, Users, Briefcase, User, MessageSquare, 
 // Require the video and logo statically so Vite correctly bundles them and injects the proper asset URLs
 import bgVideo from '../assets/images/Abstract_details_architectural_t…_202606071428.mp4';
 import bgVideo2 from '../assets/images/Cinematic_black_white_video_scenes_202606071713.mp4';
-import logoImg1 from '../assets/images/Majo_logo_pink.png';
+import logoImg1 from '../assets/images/Majo_abogada_logo.png';
 
 interface HeroProps {
   onScrollTo: (id: string) => void;

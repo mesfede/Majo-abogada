@@ -11,7 +11,7 @@ import AsistenteIA from './components/AsistenteIA';
 import LegalModals, { LegalDocType } from './components/LegalModals';
 import ConsultForm from './components/ConsultForm';
 import Dashboard from './components/Dashboard';
-import logoImg1 from './assets/images/Majo_logo_pink.png';
+import logoImg1 from './assets/images/Majo_abogada_logo.png';
 import { Mail, Share2, Scale, ExternalLink, Lock, X, AlertCircle, ShieldAlert, Sparkles, Loader2, LogOut } from 'lucide-react';
 import { auth } from './firebase';
 import { signInWithPopup, GoogleAuthProvider } from 'firebase/auth';

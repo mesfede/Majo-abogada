@@ -5,6 +5,7 @@ import { createServer as createViteServer } from "vite";
 import { GoogleGenAI, Type } from "@google/genai";
 import dotenv from "dotenv";
 import admin from "firebase-admin";
+import { getFirestore } from "firebase-admin/firestore";
 
 // Load local environment variables
 dotenv.config();
@@ -36,9 +37,7 @@ if (firebaseProjectId) {
       projectId: firebaseProjectId
     });
     
-    // Import here or just use admin.firestore structure. But admin.firestore takes an app.
-    // Wait, let's use the explicit require to be safe if types are weird.
-    const { getFirestore } = require("firebase-admin/firestore");
+    // Use top-level imported getFirestore with the initialized app
     firestoreDb = databaseId ? getFirestore(app, databaseId) : getFirestore(app);
     console.log(`🤖 Firebase Admin successfully initialized for project: ${firebaseProjectId}, database: ${databaseId || "(default)"}`);
   } catch (adminErr) {
