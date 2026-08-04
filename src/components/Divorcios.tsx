@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'motion/react';
-import { Users, ShieldAlert, Award, Footprints, Handshake, Landmark } from 'lucide-react';
+import { Users, Handshake, Landmark } from 'lucide-react';
 
 export default function Divorcios() {
   const cards = [
@@ -13,11 +13,6 @@ export default function Divorcios() {
       title: 'Divorcios Contenciosos',
       desc: 'Defensa férrea y comprometida de sus derechos en situaciones difíciles o de conflicto.',
       icon: Landmark
-    },
-    {
-      title: 'Cuidado y Alimentos',
-      desc: 'Protección prioritaria e integral del interés superior del menor y régimen de visitas.',
-      icon: Footprints
     },
     {
       title: 'División de Bienes',

@@ -3,7 +3,6 @@ import Hero from './components/Hero';
 import Sucesiones from './components/Sucesiones';
 import Divorcios from './components/Divorcios';
 import Nosotros from './components/Nosotros';
-import CalculadoraHonorarios from './components/CalculadoraHonorarios';
 import Seguimiento from './components/Seguimiento';
 import GlosarioModal from './components/Glosario';
 import QuickNav from './components/QuickNav';
@@ -91,7 +90,7 @@ export default function App() {
       const user = result.user;
       const cleanEmail = user.email?.trim().toLowerCase();
       
-      if (cleanEmail === 'mesfede@gmail.com') {
+      if (cleanEmail === 'lizasomariajose@gmail.com') {
         setAuthSuccess(true);
         setIsAuthenticated(true);
         localStorage.setItem('abogada_authenticated', 'true');
@@ -107,7 +106,7 @@ export default function App() {
         await auth.signOut();
         setIsVerifying(false);
         setAuthError(
-          `La cuenta de Google ingresada (${cleanEmail || 'desconocida'}) no está autorizada. Únicamente la cuenta vinculada de la Dra. María José Lizaso (mesfede@gmail.com) posee credenciales válidas para ingresar al panel de expedientes.`
+          `La cuenta de Google ingresada (${cleanEmail || 'desconocida'}) no está autorizada. Únicamente la cuenta vinculada de la Dra. María José Lizaso (lizasomariajose@gmail.com) posee credenciales válidas para ingresar al panel de expedientes.`
         );
       }
     } catch (err: any) {
@@ -128,7 +127,7 @@ export default function App() {
     setTimeout(() => {
       const cleanEmail = gmailInput.trim().toLowerCase();
       
-      if (cleanEmail === 'mesfede@gmail.com') {
+      if (cleanEmail === 'lizasomariajose@gmail.com') {
         setAuthSuccess(true);
         setTimeout(() => {
           setIsAuthenticated(true);
@@ -142,7 +141,7 @@ export default function App() {
       } else {
         setIsVerifying(false);
         setAuthError(
-          'Correo electrónico no autorizado. Únicamente la cuenta de Google vinculada de la Dra. María José Lizaso (mesfede@gmail.com) posee credenciales válidas para ingresar al panel de expedientes.'
+          'Correo electrónico no autorizado. Únicamente la cuenta de Google vinculada de la Dra. María José Lizaso (lizasomariajose@gmail.com) posee credenciales válidas para ingresar al panel de expedientes.'
         );
       }
     }, 1000);
@@ -202,13 +201,6 @@ export default function App() {
             <Hero onScrollTo={handleScrollTo} />
             <Sucesiones />
             <Divorcios />
-            
-            {/* Visual separating line */}
-            <div className="max-w-[1280px] mx-auto px-6 md:px-16">
-              <hr className="border-t border-brand-gold/15" />
-            </div>
-
-            <CalculadoraHonorarios />
             <Nosotros />
             <GlosarioModal isOpen={isGlosarioOpen} onClose={() => setIsGlosarioOpen(false)} />
             <Seguimiento />
@@ -280,7 +272,7 @@ export default function App() {
               <Share2 className="w-4 h-4" />
             </button>
             <a 
-              href="mailto:estudio.lizaso@gmail.com" 
+              href="mailto:lizasomariajose@gmail.com" 
               className="p-2.5 rounded-full bg-white/5 hover:bg-brand-gold/20 text-slate-300 hover:text-brand-gold-light transition-all border border-white/5" 
               title="Contacto Directo por Correo"
             >
@@ -383,7 +375,7 @@ export default function App() {
                 {/* Direct helper shortcut for rapid inspection */}
                 <div className="pt-1">
                   <p className="text-[10px] text-neutral-400 leading-normal text-justify leading-snug">
-                    <strong className="text-brand-gold">Seguridad titular:</strong> Al autenticarse, el portal confirmará que el correo coincida con el padrón habilitado (<span className="text-[#0a2240] select-all font-semibold">mesfede@gmail.com</span>).
+                    <strong className="text-brand-gold">Seguridad titular:</strong> Al autenticarse, el portal confirmará que el correo coincida con el padrón habilitado (<span className="text-[#0a2240] select-all font-semibold">lizasomariajose@gmail.com</span>).
                   </p>
                 </div>
 

@@ -84,22 +84,11 @@ export default function Nosotros() {
                     <span className="font-light">Dra. María José</span> <span className="font-medium text-brand-gold">Lizaso</span>
                   </h2>
                 </div>
-                <span className="font-display text-sm text-[#44474c] italic block mt-4">Abogada Titular - Matrícula Abogacía CABA / Prov. Bs. As.</span>
               </div>
 
               <p className="font-sans text-sm md:text-base text-[#44474c] leading-relaxed text-justify">
-                Con más de dos décadas enfocándose de manera exclusiva en litigación civil y mediación, la Dra. María José Lizaso ha consolidado un estudio de vanguardia jurídica. Su labor combina excelencia académica de grado con una profunda convicción ética que prioriza siempre disolver conflictos de manera constructiva, resguardando el acervo sucesorio y el futuro emocional del menor.
+                Con más de dos décadas enfocándose de manera exclusiva en litigación civil y mediación, la Dra. María José Lizaso ha consolidado un estudio de vanguardia jurídica. Su labor combina excelencia académica de grado con una profunda convicción ética que prioriza siempre disolver conflictos de manera constructiva.
               </p>
-
-              <div className="flex gap-4 p-4 bg-neutral-50 rounded border border-brand-primary/5 shadow-sm">
-                <div className="p-2 bg-brand-gold-light text-[#0a2240] rounded font-bold h-fit">
-                  <Award className="w-5 h-5" />
-                </div>
-                <div>
-                  <h5 className="font-sans text-xs font-bold text-brand-primary uppercase tracking-wide">Criterio Académico & Técnico</h5>
-                  <p className="font-sans text-[13px] text-neutral-500 leading-relaxed mt-1">Egreso distinguido y formación permanente en posgrados en divorcios y derecho sucesorio notarial.</p>
-                </div>
-              </div>
             </div>
 
             {/* Core values block cards */}

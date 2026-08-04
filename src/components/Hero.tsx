@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { ArrowRight, Calendar, Landmark, Users, Briefcase, User, MessageSquare, Calculator, Search, BookOpen } from 'lucide-react';
+import { ArrowRight, Calendar, Landmark, Users, Briefcase, User, MessageSquare, Search, BookOpen } from 'lucide-react';
 
 // Require the video and logo statically so Vite correctly bundles them and injects the proper asset URLs
 import bgVideo from '../assets/images/Abstract_details_architectural_t…_202606071428.mp4';
@@ -51,18 +51,6 @@ const MENU_ITEMS = [
   {
     index: 3,
     tag: "04",
-    label: "Previsibilidad",
-    titleLight: "Previsibilidad",
-    titleBold: "Legal",
-    desc: "Sabemos que dar el primer paso legal genera incertidumbre. Por eso, nos regimos estrictamente por las normativas vigentes, priorizando la claridad y la previsibilidad económica desde el primer día con opciones de pago.",
-    target: "calculadora",
-    icon: Calculator,
-    tagline: "TRANSPARENCIA TOTAL",
-    buttonText: "Ver referencias"
-  },
-  {
-    index: 4,
-    tag: "05",
     label: "Quién Soy",
     titleLight: "Dra. María José",
     titleBold: "Lizaso",
@@ -73,8 +61,8 @@ const MENU_ITEMS = [
     buttonText: "Mi trayectoria"
   },
   {
-    index: 5,
-    tag: "06",
+    index: 4,
+    tag: "05",
     label: "Contacto",
     titleLight: "Agendar",
     titleBold: "Consulta",

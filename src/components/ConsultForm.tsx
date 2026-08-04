@@ -89,7 +89,7 @@ export default function ConsultForm() {
 
       // Send via FormSubmit client-side (Zero API Key configuration needed)
       try {
-        const mailPromise = fetch("https://formsubmit.co/ajax/mesfede@gmail.com", {
+        const mailPromise = fetch("https://formsubmit.co/ajax/lizasomariajose@gmail.com", {
           method: "POST",
           headers: { 
             'Content-Type': 'application/json',

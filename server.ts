@@ -541,12 +541,6 @@ app.get("/sitemap.xml", (req, res) => {
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>${baseUrl}/#calculadora</loc>
-    <lastmod>${date}</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
     <loc>${baseUrl}/#nosotros</loc>
     <lastmod>${date}</lastmod>
     <changefreq>monthly</changefreq>
