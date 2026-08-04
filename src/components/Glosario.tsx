@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { BookOpen, Tag, ChevronDown, X } from 'lucide-react';
 
-const GlosarioItem = ({ term, def }: { term: string, def: string }) => {
+const GlosarioItem = ({ term, def }: { term: string; def: string; key?: React.Key }) => {
   const [isOpen, setIsOpen] = useState(false);
   return (
     <div className="border-b border-neutral-100">

@@ -502,6 +502,66 @@ Instrucciones:
   }
 });
 
+// --- SEO & CRAWLER ROUTES (GOOGLE SEARCH ENGINE OPTIMIZATION) ---
+app.get("/robots.txt", (req, res) => {
+  res.type("text/plain");
+  const host = req.get("host") || "dra-mariajose-lizaso.com";
+  const protocol = req.protocol || "https";
+  res.send(`User-agent: *
+Allow: /
+Sitemap: ${protocol}://${host}/sitemap.xml
+`);
+});
+
+app.get("/sitemap.xml", (req, res) => {
+  res.type("application/xml");
+  const host = req.get("host") || "dra-mariajose-lizaso.com";
+  const protocol = req.protocol || "https";
+  const baseUrl = `${protocol}://${host}`;
+  const date = new Date().toISOString().split("T")[0];
+
+  const xml = `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>${baseUrl}/</loc>
+    <lastmod>${date}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>${baseUrl}/#sucesiones</loc>
+    <lastmod>${date}</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>${baseUrl}/#divorcios</loc>
+    <lastmod>${date}</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>${baseUrl}/#calculadora</loc>
+    <lastmod>${date}</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>${baseUrl}/#nosotros</loc>
+    <lastmod>${date}</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>${baseUrl}/#seguimiento</loc>
+    <lastmod>${date}</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+</urlset>`;
+  res.send(xml);
+});
+
 // --- VITE MIDDLEWARE OR STATIC FILES SERVING ---
 
 async function startServer() {
