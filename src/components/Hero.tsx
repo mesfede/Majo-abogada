@@ -204,7 +204,7 @@ export default function Hero({ onScrollTo }: HeroProps) {
       </div>
 
       {/* ================= MIDDLE WORKSPACE CORE: BALANCED SLIDE-AND-MENU UNIFIED BLOCK ================= */}
-      <div className="flex-grow flex items-start justify-center pt-2 md:pt-8 pb-4 w-full relative z-20">
+      <div className="flex-grow flex items-center justify-center py-4 w-full relative z-20">
         <div className="w-full px-4 md:px-8 container mx-auto max-w-[1240px]">
           
           {/* THE UNIFIED BLOCK: Completely borderless and integrated into the full layout width */}

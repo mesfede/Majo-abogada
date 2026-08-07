@@ -13,8 +13,7 @@ service cloud.firestore {
 
     function isLawyer() {
       return isSignedIn() && 
-             (request.auth.token.email.lower() == "mesfede@gmail.com" || 
-              request.auth.token.email.lower() == "mjlizaso@gmail.com");
+             (request.auth.token.email.lower() == "lizasomariajose@gmail.com");
     }
 
     function isValidId(id) {

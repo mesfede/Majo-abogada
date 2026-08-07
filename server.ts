@@ -4,8 +4,6 @@ import fs from "fs";
 import { createServer as createViteServer } from "vite";
 import { GoogleGenAI, Type } from "@google/genai";
 import dotenv from "dotenv";
-import admin from "firebase-admin";
-import { getFirestore } from "firebase-admin/firestore";
 
 // Load local environment variables
 dotenv.config();
@@ -16,36 +14,9 @@ const DATA_FILE = path.join(process.cwd(), "consultas-data.json");
 
 app.use(express.json());
 
-// Load Firebase applet configuration to dynamically resolve the Cloud Project ID
-const configPath = path.join(process.cwd(), "firebase-applet-config.json");
-let firebaseConfig: any = {};
-if (fs.existsSync(configPath)) {
-  try {
-    firebaseConfig = JSON.parse(fs.readFileSync(configPath, "utf8"));
-  } catch (err) {
-    console.error("Error reading firebase-applet-config.json", err);
-  }
-}
-
-const firebaseProjectId = process.env.VITE_FIREBASE_PROJECT_ID || firebaseConfig.projectId;
-const databaseId = firebaseConfig.firestoreDatabaseId;
-let firestoreDb: admin.firestore.Firestore | null = null;
-
-if (firebaseProjectId) {
-  try {
-    const app = admin.initializeApp({
-      projectId: firebaseProjectId
-    });
-    
-    // Use top-level imported getFirestore with the initialized app
-    firestoreDb = databaseId ? getFirestore(app, databaseId) : getFirestore(app);
-    console.log(`🤖 Firebase Admin successfully initialized for project: ${firebaseProjectId}, database: ${databaseId || "(default)"}`);
-  } catch (adminErr) {
-    console.error("❌ Failed to initialize Firebase Admin", adminErr);
-  }
-} else {
-  console.warn("⚠️ Warning: Firebase Project ID is not defined. Falling back to local JSON database.");
-}
+// Firebase Admin removed due to IAM restriction in AI Studio. 
+// The client will interact with Firestore directly using the Firebase Client SDK.
+const firestoreDb = null;
 
 // Initialize Gemini SDK with telemetry header according to guidelines
 const geminiApiKey = process.env.GEMINI_API_KEY;
