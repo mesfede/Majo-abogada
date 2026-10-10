@@ -76,18 +76,20 @@ export default function Nosotros() {
             {/* Bio Header */}
             <div className="space-y-6">
               <div className="border-l-0 pl-0">
-                <span className="font-sans text-xs uppercase tracking-[0.25em] text-brand-gold font-bold block mb-4">Quién Soy</span>
+                <span className="font-sans text-xs uppercase tracking-[0.25em] text-brand-gold font-bold block mb-4">
+                  Abogada Matriculada &middot; Trayectoria y Excelencia
+                </span>
                 <div className="flex items-center gap-4 mb-2">
                   <User className="w-8 h-8 md:w-10 md:h-10 text-brand-gold stroke-[1.5]" />
                   <div className="h-10 w-[1px] bg-brand-gold/30"></div>
                   <h2 className="font-display text-3xl md:text-4xl text-brand-primary leading-none m-0 p-0">
-                    <span className="font-light">Dra. María José</span> <span className="font-medium text-brand-gold">Lizaso</span>
+                    <span className="font-light">Abogada Dra. María José</span> <span className="font-medium text-brand-gold">Lizaso</span>
                   </h2>
                 </div>
               </div>
 
               <p className="font-sans text-sm md:text-base text-[#44474c] leading-relaxed text-justify">
-                Con más de dos décadas enfocándose de manera exclusiva en litigación civil y mediación, la Dra. María José Lizaso ha consolidado un estudio de vanguardia jurídica. Su labor combina excelencia académica de grado con una profunda convicción ética que prioriza siempre disolver conflictos de manera constructiva.
+                Con más de dos décadas de ejercicio profesional enfocándose de manera exclusiva en litigación civil, derecho sucesorio y de familia, la <strong>abogada Dra. María José Lizaso</strong> (Reg. Mat. T° VI F° 89) lidera un estudio jurídico de vanguardia con actuación activa en la Ciudad Autónoma de Buenos Aires (CABA) y los distintos departamentos judiciales de la Provincia de Buenos Aires. Su labor combina excelencia técnica con un trato humano y personalizado, priorizando siempre resolver los conflictos de forma ágil, segura y constructiva.
               </p>
             </div>
 

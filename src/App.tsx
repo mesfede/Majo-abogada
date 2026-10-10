@@ -3,6 +3,7 @@ import Hero from './components/Hero';
 import Sucesiones from './components/Sucesiones';
 import Divorcios from './components/Divorcios';
 import Nosotros from './components/Nosotros';
+import Especialidades from './components/Especialidades';
 import Seguimiento from './components/Seguimiento';
 import GlosarioModal from './components/Glosario';
 import QuickNav from './components/QuickNav';
@@ -202,6 +203,7 @@ export default function App() {
             <Sucesiones />
             <Divorcios />
             <Nosotros />
+            <Especialidades />
             <GlosarioModal isOpen={isGlosarioOpen} onClose={() => setIsGlosarioOpen(false)} />
             <Seguimiento />
             <ConsultForm />

@@ -52,7 +52,7 @@ const MENU_ITEMS = [
     index: 3,
     tag: "04",
     label: "Quién Soy",
-    titleLight: "Dra. María José",
+    titleLight: "Abogada Dra. María José",
     titleBold: "Lizaso",
     desc: "Más de dos décadas de impecable excelencia académica, litigación civil activa y mediación de conflictos en el ámbito privado, priorizando siempre soluciones armoniosas y constructivas. Una vocación inquebrantable orientada a brindar respuestas ágiles, seguras y de absoluta confiabilidad.",
     target: "nosotros",
@@ -183,9 +183,13 @@ export default function Hero({ onScrollTo }: HeroProps) {
           
           {/* Brand logo positioned at the top left, aligned with the main container - increased size by 15% */}
           <div className="flex items-center justify-center sm:justify-start gap-4 md:gap-6 select-none w-full sm:w-auto">
+            {/* Semantic H1 for SEO visibility with primary keyword clusters */}
+            <h1 className="sr-only">
+              Abogada Dra. María José Lizaso | Estudio Jurídico Especialista en Sucesiones y Divorcios en CABA y Provincia de Buenos Aires
+            </h1>
             <img 
               src={logoImg1} 
-              alt="Dra. María José Lizaso" 
+              alt="Abogada Dra. María José Lizaso - Estudio Jurídico Sucesiones y Divorcios" 
               className="h-[46px] sm:h-[58px] md:h-[69px] w-auto object-contain drop-shadow-md hover:scale-[1.01] transition-all duration-300 pointer-events-auto cursor-pointer"
               referrerPolicy="no-referrer"
               onClick={() => onScrollTo('top')}

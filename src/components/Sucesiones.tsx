@@ -57,7 +57,7 @@ export default function Sucesiones() {
           >
             <div>
               <span className="font-sans text-xs uppercase tracking-[0.25em] text-brand-gold font-bold block mb-4">
-                Especialidad Principal
+                Abogada en Sucesiones &middot; CABA y Provincia de Buenos Aires
               </span>
               <div className="flex items-center gap-4 mb-6">
                 <Landmark className="w-8 h-8 md:w-10 md:h-10 text-brand-gold stroke-[1.5]" />
@@ -69,7 +69,7 @@ export default function Sucesiones() {
             </div>
             
             <p className="font-sans text-lg md:text-xl font-light text-neutral-600 leading-[1.8] text-left max-w-2xl border-l-4 border-[#0a2240]/10 pl-5">
-              Gestionamos la transmisión de bienes con la máxima celeridad y rigor técnico. Entendemos que una sucesión es más que un trámite legal; es la preservación de un legado y la seguridad de sus herederos. Nos enfocamos en aliviar la carga administrativa de nuestros clientes durante estos momentos.
+              Como abogada especialista en sucesiones y declaratoria de herederos, gestionamos la transmisión de bienes con la máxima celeridad procesal y rigor técnico en juzgados de CABA y Provincia de Buenos Aires. Una sucesión es la preservación de un legado familiar; nos enfocamos en garantizar seguridad jurídica y aliviar las cargas administrativas de los herederos.
             </p>
             
             {/* Elements list matching original structure */}

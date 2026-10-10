@@ -53,7 +53,7 @@ export default function Divorcios() {
           >
             <div>
               <span className="font-sans text-xs uppercase tracking-[0.25em] text-brand-gold-light/90 font-bold block mb-4">
-                Especialidad en Divorcios
+                Abogada de Divorcios &middot; Derecho de Familia en CABA y Bs. As.
               </span>
               <div className="flex items-center gap-4 mb-6">
                 <Users className="w-8 h-8 md:w-10 md:h-10 text-brand-gold-light stroke-[1.5]" />
@@ -63,7 +63,7 @@ export default function Divorcios() {
                 </h2>
               </div>
               <p className="font-sans text-lg md:text-xl font-light text-slate-100 leading-[1.8] text-left">
-                Abordamos las crisis conyugales con una combinación única de empatía humana y firmeza jurídica. Nuestra meta absoluta es lograr acuerdos sostenibles en el tiempo que protejan con esmero el bienestar de los hijos y la integridad de su patrimonio.
+                Como abogada especialista en divorcios, abordamos las crisis familiares con una combinación de empatía humana y firmeza jurídica. Brindamos asesoramiento en divorcio unilateral o bilateral, confección del convenio regulador, cuota alimentaria, régimen de comunicación y división de bienes conyugales en Buenos Aires.
               </p>
             </div>
           </motion.div>

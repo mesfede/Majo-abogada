@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Landmark, Users, User, Search } from 'lucide-react';
+import { Landmark, Users, User, Search, BookOpen } from 'lucide-react';
 
 export default function QuickNav({ onScrollTo }: { onScrollTo: (id: string) => void }) {
   const [isVisible, setIsVisible] = useState(false);
@@ -21,8 +21,9 @@ export default function QuickNav({ onScrollTo }: { onScrollTo: (id: string) => v
   const items = [
     { label: "Sucesiones", id: "sucesiones", icon: Landmark },
     { label: "Divorcios", id: "divorcios", icon: Users },
-    { label: "Expediente", id: "seguimiento", icon: Search },
-    { label: "Quién Soy", id: "nosotros", icon: User }
+    { label: "Quién Soy", id: "nosotros", icon: User },
+    { label: "Servicios & FAQ", id: "especialidades", icon: BookOpen },
+    { label: "Expediente", id: "seguimiento", icon: Search }
   ];
 
   return (
